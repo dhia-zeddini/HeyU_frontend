@@ -68,7 +68,11 @@ class _LoginPageState extends State<LoginPage> {
             Expanded(child: Container()),
             InkWell(
               onTap: () {
+                if(controller.text.length<8){
+                  missingPhonelert();
+                }else{
                 showMyDilogue();
+                }
               },
               child: Container(
                 color: Colors.pink[400],
@@ -218,19 +222,73 @@ class _LoginPageState extends State<LoginPage> {
                     "We will be veryfying your Phone Number",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Text(countrycode + " " + controller.text),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   const Text(
-                    "Is this ok , or would you like to edit the number?",
+                    "Is this ok,or would you like to edit the number?",
                     style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 13,
                     ),
                   )
                 ],
               ),
             ),
             actions: [
-              TextButton(onPressed: () {}, child: const Text("Edit")),
-              TextButton(onPressed: () {}, child: const Text("OK")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    "Edit",
+                    style: TextStyle(color: Colors.pinkAccent),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                  },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(color: Colors.pinkAccent),
+                  )),
+            ],
+          );
+        });
+  }
+  Future<void> missingPhonelert() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "There is no valid number entered",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+
+                ],
+              ),
+            ),
+            actions: [
+
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                  },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(color: Colors.pinkAccent),
+                  )),
             ],
           );
         });
