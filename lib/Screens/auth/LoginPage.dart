@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/CountryModel.dart';
 import 'package:heyu_front/Screens/auth/CountryPage.dart';
+import 'package:heyu_front/Screens/auth/OtpScreen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
             InkWell(
               onTap: () {
                 if(controller.text.length<8){
-                  missingPhonelert();
+                  missingPhoneAlert();
                 }else{
                 showMyDilogue();
                 }
@@ -249,7 +250,10 @@ class _LoginPageState extends State<LoginPage> {
                   )),
               TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (builder)=> OtpScreen(
+                      countryCode: countrycode,
+                      number: controller.text,
+                    )));
 
                   },
                   child: const Text(
@@ -260,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         });
   }
-  Future<void> missingPhonelert() {
+  Future<void> missingPhoneAlert() {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -283,7 +287,6 @@ class _LoginPageState extends State<LoginPage> {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-
                   },
                   child: const Text(
                     "OK",
