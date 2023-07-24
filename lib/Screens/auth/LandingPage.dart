@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Screens/auth/LoginPage.dart';
+import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -35,8 +36,8 @@ class _LandingPageState extends State<LandingPage> {
               Image.asset(
                 "assets/images/circle.png",
                 color: Colors.pink[700],
-                height: 340,
-                width: 340,
+                height: 300,
+                width: 300,
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height / 9,
@@ -64,7 +65,7 @@ class _LandingPageState extends State<LandingPage> {
               ),
               InkWell(
                 onTap: (){
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>const LoginPage()),(route)=>false);
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>const LoginScreen()),(route)=>false);
                 },
                 child: Container(
                   child: SizedBox(
