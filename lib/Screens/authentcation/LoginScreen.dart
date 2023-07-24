@@ -219,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>const LoginScreen()),(route)=>false);
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>const RegistrationScreen()),(route)=>false);
 
                           }),
                   ],
