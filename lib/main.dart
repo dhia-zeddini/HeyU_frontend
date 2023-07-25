@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Screens/auth/LandingPage.dart';
+import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
+import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
+import 'package:heyu_front/Screens/chat/chatsScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +14,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HeyU',
       home: LandingPage(),
+      routes: {
+        '/':(context)=>const LandingPage(),
+        '/login':(context)=>const LoginScreen(),
+        '/register':(context)=>const RegistrationScreen(),
+        '/chats':(context)=>const ChatsScreen(),
+      },
     );
+
   }
 }
