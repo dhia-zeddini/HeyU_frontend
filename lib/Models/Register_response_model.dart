@@ -1,18 +1,28 @@
+import 'dart:convert';
+
+RegisterResponseModel loginResponseModel(String str)=>
+    RegisterResponseModel.fromJson(json.decode(str));
+
 class RegisterResponseModel {
   late bool status;
-  late String success;
+  late String message;
 
-  RegisterResponseModel({required this.status, required this.success});
+
+  RegisterResponseModel({required this.status,  required this.message});
 
   RegisterResponseModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    success = json['success'];
+    if(json['success']) {
+      message = json['success'];
+    }else{
+      message= json['error'];
+    }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = status;
-    data['success'] = success;
+    data['message'] = message;
     return data;
   }
 }

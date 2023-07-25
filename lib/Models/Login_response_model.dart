@@ -1,3 +1,8 @@
+
+import 'dart:convert';
+
+LoginResponseModel loginResponseModel(String str)=>
+    LoginResponseModel.fromJson(json.decode(str));
 class LoginResponseModel {
   late bool status;
   late String token;
