@@ -14,6 +14,7 @@ class SharedService {
   static Future<LoginResponseModel?> loginDetails() async {
     if (await isLoggedIn()) {
       var cacheData = await APICacheManager().getCacheData("login_details");
+      print(loginResponseJson(cacheData.syncData).token);
       return loginResponseJson(cacheData.syncData);
     }
   }

@@ -3,9 +3,18 @@ import 'package:heyu_front/Screens/auth/LandingPage.dart';
 import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
 import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
 import 'package:heyu_front/Screens/chat/chatsScreen.dart';
+import 'package:heyu_front/Services/shared_service.dart';
 
-void main() {
+Widget defaultHome=const LandingPage();
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  bool result=await SharedService.isLoggedIn();
+  if(result){
+    defaultHome=const ChatsScreen();
+  }
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +26,7 @@ class MyApp extends StatelessWidget {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HeyU',
-      home: LandingPage(),
+      home: defaultHome,
       routes: {
 
         '/login':(context)=>const LoginScreen(),

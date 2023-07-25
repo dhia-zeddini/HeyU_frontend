@@ -370,4 +370,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return false;
     }
   }
+
+  bool PwdMatch(String input) {
+    final regExp = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
+    return regExp.hasMatch(input);
+  }
 }
