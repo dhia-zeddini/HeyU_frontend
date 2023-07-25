@@ -1,6 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:heyu_front/Models/Login_request_model.dart';
+import 'package:heyu_front/Models/Login_response_model.dart';
 import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
+import 'package:heyu_front/Services/auth_service.dart';
+import 'package:heyu_front/config.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
 
@@ -17,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   String? phoneNumber;
   String? password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 bottomRight: Radius.circular(100),
               ),
             ),
-            child: Column(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Align(
@@ -74,8 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(
+          const Padding(
+            padding: EdgeInsets.only(
               left: 20,
               bottom: 30,
               top: 50,
@@ -153,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.only(right: 25, top: 10),
               child: RichText(
                 text: TextSpan(
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.pinkAccent,
                     fontSize: 14.5,
                   ),
@@ -173,28 +178,54 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           Center(
             child: FormHelper.submitButton(
               "Login",
-              () {},
+              () {
+                if (validateAndSave()) {
+                  setState(() {
+                    isAPIcallProcess = true;
+                  });
+                  LoginRequestModel model = LoginRequestModel(
+                      phoneNumber: phoneNumber!, password: password!);
+                  AuthService.login(model).then((response) {
+                    setState(() {
+                      isAPIcallProcess = false;
+                    });
+                    if (response) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/chats', (route) => false);
+                    } else {
+                      FormHelper.showSimpleAlertDialog(context, Config.appName,
+                          "Invalid Phone number or Password! ", "OK", () {
+                        Navigator.pop(context);
+                      });
+                    }
+                  });
+                }
+              },
               btnColor: Colors.white,
               borderColor: Colors.pink,
               txtColor: Colors.pink,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          Center(
+          const Center(
             child: Text(
               "OR",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,color: Colors.pink,),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.pink,
+              ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Align(
@@ -208,19 +239,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontSize: 14.5,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "Don't have an account? ",
                     ),
                     TextSpan(
                         text: "Sign up",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=>const RegistrationScreen()),(route)=>false);
-
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (builder) =>
+                                        const RegistrationScreen()),
+                                (route) => false);
                           }),
                   ],
                 ),
@@ -230,5 +265,15 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
+  }
+
+  bool validateAndSave() {
+    final form = globalKey.currentState;
+    if (form!.validate()) {
+      form.save();
+      return true;
+    } else {
+      return false;
+    }
   }
 }

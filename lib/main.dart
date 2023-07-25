@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'HeyU',
       home: LandingPage(),
       routes: {
-        '/':(context)=>const LandingPage(),
+
         '/login':(context)=>const LoginScreen(),
         '/register':(context)=>const RegistrationScreen(),
         '/chats':(context)=>const ChatsScreen(),

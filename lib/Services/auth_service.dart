@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:heyu_front/Models/Login_request_model.dart';
 import 'package:heyu_front/Models/Login_response_model.dart';
 import 'package:heyu_front/Models/Register_request_model.dart';
 import 'package:heyu_front/Models/Register_response_model.dart';
@@ -12,7 +13,7 @@ class AuthService{
   static var client=http.Client();
 
   //login
-  static Future<bool> login(LoginResponseModel model)async{
+  static Future<bool> login(LoginRequestModel model)async{
     Map<String,String> requestHeaders={
       'Content-Type':'application/json',
     };
@@ -22,6 +23,7 @@ class AuthService{
       headers: requestHeaders,
       body: jsonEncode(model.toJson()),
     );
+    print(url);
     if(response.statusCode==200){
       await SharedService.setLogindetails(loginResponseJson(response.body));
 

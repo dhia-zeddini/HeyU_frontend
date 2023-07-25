@@ -1,8 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:heyu_front/Models/Register_request_model.dart';
 import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
+
+import '../../Models/Register_response_model.dart';
+import '../../Services/auth_service.dart';
+import '../../config.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -122,17 +127,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
-                child:   FormHelper.inputFieldWidget(
+                child: FormHelper.inputFieldWidget(
                   context,
                   "lastname",
                   "Last Name",
-                      (onValidateVal) {
+                  (onValidateVal) {
                     if (onValidateVal.isEmpty) {
                       return "Last Name can't be empty";
                     }
                     return null;
                   },
-                      (onSavedVal) {
+                  (onSavedVal) {
                     lastname = onSavedVal;
                   },
                   showPrefixIcon: true,
@@ -255,22 +260,57 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   )),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Center(
             child: FormHelper.submitButton(
               "Register",
-              () {},
+              () {
+                if (validateAndSave()) {
+                  setState(() {
+                    isAPIcallProcess = true;
+                  });
+                  RegisterRequestModel model = RegisterRequestModel(
+                      firstName: firstname!,
+                      lastName: lastname!,
+                      userName: username!,
+                      email: email!,
+                      phoneNumber: phoneNumber!,
+                      password: password!,
+                      about: "about",
+                      avatar: "avatar");
+                  AuthService.register(model).then((response) {
+                    setState(() {
+                      isAPIcallProcess = false;
+                    });
+                    if (response.status) {
+                      FormHelper.showSimpleAlertDialog(
+                          context,
+                          Config.appName,
+                          "${response.message}. Please login to the account",
+                          "OK", () {
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/login', (route) => false);
+                      });
+                    } else {
+                      FormHelper.showSimpleAlertDialog(
+                          context, Config.appName, response.message, "OK", () {
+                        Navigator.pop(context);
+                      });
+                    }
+                  });
+                }
+              },
               btnColor: Colors.white,
               borderColor: Colors.pink,
               txtColor: Colors.pink,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Center(
+          const Center(
             child: Text(
               "OR",
               style: TextStyle(
@@ -280,7 +320,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Align(
@@ -294,12 +334,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     fontSize: 14.5,
                   ),
                   children: [
-                    TextSpan(
+                    const TextSpan(
                       text: "Already have an account? ",
                     ),
                     TextSpan(
                         text: "Sign in",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
@@ -319,5 +359,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ],
       ),
     );
+  }
+
+  bool validateAndSave() {
+    final form = globalKey.currentState;
+    if (form!.validate()) {
+      form.save();
+      return true;
+    } else {
+      return false;
+    }
   }
 }

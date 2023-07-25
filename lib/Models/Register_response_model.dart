@@ -12,7 +12,7 @@ class RegisterResponseModel {
 
   RegisterResponseModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    if(json['success']) {
+    if(json['success']!=null) {
       message = json['success'];
     }else{
       message= json['error'];
