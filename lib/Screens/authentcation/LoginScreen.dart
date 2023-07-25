@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           SizedBox(
-            height: 20,
+            height: 50,
           ),
           Center(
             child: FormHelper.submitButton(
