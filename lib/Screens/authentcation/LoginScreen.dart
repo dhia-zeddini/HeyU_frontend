@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                     if (response) {
                       Navigator.pushNamedAndRemoveUntil(
-                          context, '/chats', (route) => false);
+                          context, '/', (route) => false);
                     } else {
                       FormHelper.showSimpleAlertDialog(context, Config.appName,
                           "Invalid Phone number or Password! ", "OK", () {

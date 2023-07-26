@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heyu_front/Screens/HomeScreen.dart';
 import 'package:heyu_front/Screens/auth/LandingPage.dart';
 import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
 import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
@@ -11,7 +12,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   bool result=await SharedService.isLoggedIn();
   if(result){
-    defaultHome=const ChatsScreen();
+    defaultHome=const HomeScreen();
   }
   runApp(const MyApp());
 
