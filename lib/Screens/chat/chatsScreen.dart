@@ -20,6 +20,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
       body: ListView(
         children: [
           ChatItem(),
+          ChatItem(),
+
         ],
       ),
     );
