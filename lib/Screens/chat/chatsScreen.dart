@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heyu_front/Screens/chat/chat_item.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
@@ -10,6 +11,17 @@ class ChatsScreen extends StatefulWidget {
 class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.pink,
+        onPressed: (){},//add new chat
+        child: const Icon(Icons.chat),
+      ),
+      body: ListView(
+        children: [
+          ChatItem(),
+        ],
+      ),
+    );
   }
 }

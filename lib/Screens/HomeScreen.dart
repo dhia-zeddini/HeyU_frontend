@@ -75,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           )
         ],
         bottom: TabBar(
+          indicatorColor: Colors.white,
           controller: tabController,
           tabs: [
             Tab(
