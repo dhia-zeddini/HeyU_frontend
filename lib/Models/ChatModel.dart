@@ -1,92 +1,97 @@
 import 'package:heyu_front/Models/MessageModel.dart';
+import 'package:heyu_front/Models/UserModel.dart';
 
-import 'UserModel.dart';
+List<ChatModel> chatsFromJson(dynamic str) =>
+    List<ChatModel>.from((str).map((x) => ChatModel.fromJson(x)));
 
 class ChatModel {
   late String chatId;
   late String chatName;
-  late bool isGroupeChat;
-  late List<UserModel> users;
-  late List<MessageModel?>? messages;
+  late bool isGroupChat;
+  late List<String> users;
+  List<MessageModel>? messages;
   late DateTime createdAt;
   late DateTime updatedAt;
-  late List<UserModel?>? archives;
-  late List<UserModel?>? deleted;
-  late String? theme;
-  late String? wallpaper;
+  List<String>? archives;
+  List<String>? deleted;
+  String? theme;
+  String? wallpaper;
+  late String image;
 
-  ChatModel(
-      {
-        required this.chatId,
-        required this.chatName,
-        required this.isGroupeChat,
-        required this.users,
-        this.messages,
-        required this.createdAt,
-        required this.updatedAt,
-        this.archives,
-        this.deleted,
-        this.theme,
-        this.wallpaper});
+  ChatModel({
+    required this.chatId,
+    required this.chatName,
+    required this.isGroupChat,
+    required this.users,
+    this.messages,
+    required this.createdAt,
+    required this.updatedAt,
+    this.archives,
+    this.deleted,
+    this.theme,
+    this.wallpaper,
+    required this.image
+  });
 
   ChatModel.fromJson(Map<String, dynamic> json) {
-    chatId = json['_id'] ;
-    chatName = json['chatName'];
-    isGroupeChat = json['isGroupeChat'];
+    chatId = json['_id']?? '';
+    chatName = json['chatName'] ?? '';
+    isGroupChat = json['isGroupChat']??false;
     if (json['users'] != null) {
-      users = <UserModel>[];
+      users = <String>[];
       json['users'].forEach((v) {
-        users.add(UserModel.fromJson(v));
+        users.add(v['_id']);
       });
+    }else{
+      print("user error");
     }
     if (json['messages'] != null) {
       messages = <MessageModel>[];
       json['messages'].forEach((v) {
-        messages!.add(MessageModel!.fromJson(v));
+        messages!.add(MessageModel.fromJson(v));
       });
+    }else{
+      print("message error");
     }
-    createdAt = json['createdAt'] ;
-    updatedAt = json['updatedAt'] ;
+    createdAt = DateTime.parse(json['createdAt']);
+    updatedAt = DateTime.parse(json['updatedAt']);
 
     if (json['archives'] != null) {
-      archives = <UserModel>[];
+      archives = <String>[];
       json['archives'].forEach((v) {
-        archives!.add(UserModel.fromJson(v));
+        archives!.add(v);
       });
     }
     if (json['deleted'] != null) {
-      deleted = <UserModel>[];
+      deleted = <String>[];
       json['deleted'].forEach((v) {
-        deleted!.add(UserModel.fromJson(v));
+        deleted!.add(v);
       });
     }
     theme = json['theme'];
     wallpaper = json['wallpaper'];
+    image=json['users'][1]['avatar'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-      data['_id'] = chatId;
+    data['_id'] = chatId;
     data['chatName'] = chatName;
-    data['isGroupeChat'] = isGroupeChat;
-    if (users != null) {
-      data['users'] = users.map((v) => v.toJson()).toList();
-    }
+    data['isGroupChat'] = isGroupChat;
+    data['users'] = users.map((v) => v).toList();
     if (messages != null) {
-      data['messages'] = messages!.map((v) => v.toJson()).toList();
+      data['messages'] = messages!.map((v) => v).toList();
     }
-      data['createdAt'] = createdAt;
-      data['updatedAt'] = updatedAt;
+    data['createdAt'] = createdAt.toIso8601String();
+    data['updatedAt'] = updatedAt.toIso8601String();
     if (archives != null) {
-      data['archives'] = archives!.map((v) => v!.toJson()).toList();
+      data['archives'] = archives!.map((v) => v).toList();
     }
     if (deleted != null) {
-      data['deleted'] = deleted!.map((v) => v!.toJson()).toList();
+      data['deleted'] = deleted!.map((v) => v).toList();
     }
     data['theme'] = theme;
     data['wallpaper'] = wallpaper;
     return data;
   }
 }
-
-

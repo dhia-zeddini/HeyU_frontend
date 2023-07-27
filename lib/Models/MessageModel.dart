@@ -3,13 +3,13 @@ import 'package:heyu_front/Models/UserModel.dart';
 
 class MessageModel {
   late String messageId;
-  late UserModel sender;
+  late String sender;
   late String content;
-  late UserModel receiverId;
-  late ChatModel? chatId;
+  late String receiverId;
+  late String? chatId;
   late DateTime createdAt;
   late DateTime updatedAt;
-  late List<UserModel?>? deleted;
+  late List<String?>? deleted;
 
   MessageModel(
       {required this.messageId,
@@ -23,16 +23,16 @@ class MessageModel {
 
   MessageModel.fromJson(Map<String, dynamic> json) {
     messageId = json['_id'];
-    sender = json['sender'];
+    sender = json['sender']['_id'];
     content = json['content'];
     receiverId = json['receiverId'];
     chatId = json['chatId'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
+    createdAt = DateTime.parse(json['createdAt']);
+    updatedAt = DateTime.parse(json['updatedAt']);
     if (json['deleted'] != null) {
-      deleted = <UserModel>[];
+      deleted = <String>[];
       json['deleted'].forEach((v) {
-        deleted!.add(UserModel.fromJson(v));
+        deleted!.add(v);
       });
     }
   }
@@ -43,13 +43,13 @@ class MessageModel {
       data['_id'] = this.iId.toJson();
     }*/
 
-    data['sender'] = sender.toJson();
+    data['sender'] = sender;
     data['content'] = content;
-    data['receiverId'] = receiverId.toJson();
+    data['receiverId'] = receiverId;
     data['chatId'] = chatId;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
-    data['deleted'] = deleted!.map((v) => v!.toJson()).toList();
+    data['deleted'] = deleted!.map((v) => v).toList();
 
     return data;
   }

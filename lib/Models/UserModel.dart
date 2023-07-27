@@ -8,10 +8,11 @@ class UserModel {
   late String password;
   late String about;
   late String avatar;
-  late List<UserModel?>? contacts;
-  late List<UserModel?>? blackList;
+  late List<String?>? contacts;
+  late List<String?>? blackList;
   late String createdAt;
   late String updatedAt;
+  late bool? online;
 
   UserModel({
     required this.uId,
@@ -27,6 +28,7 @@ class UserModel {
     this.blackList,
     required this.createdAt,
     required this.updatedAt,
+    this.online = false,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -36,23 +38,24 @@ class UserModel {
     userName = json['userName'];
     email = json['email'];
     phoneNumber = json['phoneNumber'];
-    password = json['password'];
+    password = json['password'] ?? '';
     about = json['about'];
     avatar = json['avatar'];
     if (json['contacts'] != null) {
-      contacts = <UserModel>[];
+      contacts = <String>[];
       json['contacts'].forEach((v) {
-        contacts!.add(UserModel.fromJson(v));
+        contacts!.add(v);
       });
     }
     if (json['blackList'] != null) {
-      blackList = <UserModel>[];
+      blackList = <String>[];
       json['blackList'].forEach((v) {
-        blackList!.add(UserModel.fromJson(v));
+        blackList!.add(v);
       });
     }
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    online = json['online'] as bool?;
   }
 
   Map<String, dynamic> toJson() {
@@ -67,10 +70,10 @@ class UserModel {
     data['about'] = about;
     data['avatar'] = avatar;
     if (contacts != null) {
-      data['contacts'] = contacts!.map((v) => v!.toJson()).toList();
+      data['contacts'] = contacts!.map((v) => v).toList();
     }
     if (blackList != null) {
-      data['blackList'] = blackList!.map((v) => v!.toJson()).toList();
+      data['blackList'] = blackList!.map((v) => v).toList();
     }
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;

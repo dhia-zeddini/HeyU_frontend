@@ -4,6 +4,8 @@ class Config{
   static const String loginAPI="/login";
   static const String registerAPI="/registration";
   static const String profileAPI="/user/profile";
+  static const String getUserChatsAPI="/chats/";
+
 
 
 }
