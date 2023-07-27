@@ -8,7 +8,7 @@ class ChatModel {
   late String chatId;
   late String chatName;
   late bool isGroupChat;
-  late List<String> users;
+  late List<UserModel> users;
   List<MessageModel>? messages;
   late DateTime createdAt;
   late DateTime updatedAt;
@@ -38,9 +38,9 @@ class ChatModel {
     chatName = json['chatName'] ?? '';
     isGroupChat = json['isGroupChat']??false;
     if (json['users'] != null) {
-      users = <String>[];
+      users = <UserModel>[];
       json['users'].forEach((v) {
-        users.add(v['_id']);
+        users.add(UserModel.fromJson(v));
       });
     }else{
       print("user error");

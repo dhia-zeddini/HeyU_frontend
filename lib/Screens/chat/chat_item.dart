@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
+import 'package:heyu_front/Screens/chat/indivChatScreen.dart';
 
 class ChatItem extends StatelessWidget {
   const ChatItem({super.key,required this.chatModel});
@@ -9,7 +10,9 @@ class ChatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){},
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>IndivChatScreen(chatModel: chatModel,)));
+      },
       child: Column(
         children: [
           ListTile(
