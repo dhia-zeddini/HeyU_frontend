@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/Login_request_model.dart';
 import 'package:heyu_front/Models/Login_response_model.dart';
+import 'package:heyu_front/Screens/HomeScreen.dart';
 import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
 import 'package:heyu_front/Services/auth_service.dart';
 import 'package:heyu_front/config.dart';
@@ -196,8 +197,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       isAPIcallProcess = false;
                     });
                     if (response) {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, '/', (route) => false);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (builder) => const HomeScreen()),
+                              (route) => false);
                     } else {
                       FormHelper.showSimpleAlertDialog(context, Config.appName,
                           "Invalid Phone number or Password! ", "OK", () {

@@ -15,7 +15,7 @@ class ChatModel {
   List<String>? archives;
   List<String>? deleted;
   String? theme;
-  String? wallpaper;
+  late String wallpaper;
   late String image;
 
   ChatModel({
@@ -29,7 +29,7 @@ class ChatModel {
     this.archives,
     this.deleted,
     this.theme,
-    this.wallpaper,
+    required this.wallpaper,
     required this.image
   });
 

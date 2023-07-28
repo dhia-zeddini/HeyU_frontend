@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Screens/chat/chat_item.dart';
+import 'package:heyu_front/Screens/chat/selectContact.dart';
 import 'package:heyu_front/Services/chat_service.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         backgroundColor: Colors.pink,
         onPressed: () {
           // Add new chat
+          Navigator.push(context, MaterialPageRoute(builder: (builder)=>SelectContact()));
         },
         child: const Icon(Icons.chat),
       ),

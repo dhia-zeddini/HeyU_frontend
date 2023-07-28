@@ -1,6 +1,9 @@
 import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
+import 'package:heyu_front/Screens/chat/OwnMessageCard.dart';
+import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
+import 'package:heyu_front/config.dart';
 
 class IndivChatScreen extends StatefulWidget {
   const IndivChatScreen({super.key, required this.chatModel});
@@ -30,175 +33,202 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey,
-      appBar: AppBar(
-        backgroundColor: Colors.pink,
-        leadingWidth: 70,
-        titleSpacing: 0,
-        leading: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(
-                  Icons.arrow_back,
-                  size: 24,
-                )),
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(
-                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
-            )
-          ],
-        ),
-        title: InkWell(
-          onTap: () {}, //for the contact profile
-          child: Container(
-            margin: const EdgeInsets.all(5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      children: [
+        Image.network("http://"+Config.apiURL+Config.wallpapersUrl+widget.chatModel.wallpaper,
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        fit: BoxFit.cover,),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.pink,
+            leadingWidth: 70,
+            titleSpacing: 0,
+            leading: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  widget.chatModel.users[1].userName,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 24,
+                    )),
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(
+                      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
+                )
+              ],
+            ),
+            title: InkWell(
+              onTap: () {}, //for the contact profile
+              child: Container(
+                margin: const EdgeInsets.all(5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.chatModel.users[1].userName,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const Text(
+                      "last seen today at 18:18",
+                      style: TextStyle(
+                        fontSize: 13,
+                      ),
+                    )
+                  ],
                 ),
-                const Text(
-                  "last seen today at 18:18",
-                  style: TextStyle(
-                    fontSize: 13,
+              ),
+            ),
+            actions: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+              PopupMenuButton<String>(
+                itemBuilder: (BuildContext context) {
+                  return [
+                    const PopupMenuItem(
+                      child: Text("Profile"),
+                      value: "profile",
+                    ),
+                    const PopupMenuItem(
+                      value: "brodcast",
+                      child: const Text("New brodcast"),
+                    ),
+                    const PopupMenuItem(
+                      child: const Text("Archive"),
+                      value: "archive",
+                    ),
+                    const PopupMenuItem(
+                      child: const Text("Settings"),
+                      value: "settings",
+                    ),
+                    const PopupMenuItem(
+                      child: const Text("Logout"),
+                      value: "logout",
+                    ),
+                  ];
+                },
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  print(value);
+                },
+              )
+            ],
+          ),
+          body: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Stack(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height-140,
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      OwnMessageCard(),
+                      ReplyMessageCard(),
+                      OwnMessageCard(),
+                      ReplyMessageCard(),
+                      OwnMessageCard(),
+                      ReplyMessageCard(),
+                      OwnMessageCard(),
+                      ReplyMessageCard(),
+                      OwnMessageCard(),
+                      ReplyMessageCard(),
+                      OwnMessageCard(),
+                      ReplyMessageCard(),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width - 60,
+                            child: Card(
+                              margin: const EdgeInsets.only(left: 3, bottom: 8),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25)),
+                              child: TextFormField(
+                                controller: textEditingController,
+                                focusNode: focusNode,
+                                textAlignVertical: TextAlignVertical.center,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 5,
+                                minLines: 1,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Type a message",
+                                  prefixIcon: IconButton(
+                                    icon: const Icon(Icons.emoji_emotions),
+                                    onPressed: () {
+                                      focusNode.unfocus();
+                                      focusNode.canRequestFocus = false;
+                                      setState(() {
+                                        showEmojis = !showEmojis;
+                                      });
+                                    },
+                                  ),
+                                  suffixIcon: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.attach_file),
+                                        onPressed: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            builder: (builder) => bottomSheet(),
+                                            backgroundColor: Colors.transparent,
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.camera_alt),
+                                        onPressed: () {},
+                                      ),
+                                    ],
+                                  ),
+                                  contentPadding: const EdgeInsets.all(5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: 8, right: 3, left: 3),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.pink,
+                              radius: 25,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.mic,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      showEmojis ? emojiSelect() : Container(),
+                    ],
                   ),
                 )
               ],
             ),
           ),
         ),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
-          PopupMenuButton<String>(
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem(
-                  child: Text("Profile"),
-                  value: "profile",
-                ),
-                const PopupMenuItem(
-                  value: "brodcast",
-                  child: const Text("New brodcast"),
-                ),
-                const PopupMenuItem(
-                  child: const Text("Archive"),
-                  value: "archive",
-                ),
-                const PopupMenuItem(
-                  child: const Text("Settings"),
-                  value: "settings",
-                ),
-                const PopupMenuItem(
-                  child: const Text("Logout"),
-                  value: "logout",
-                ),
-              ];
-            },
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              print(value);
-            },
-          )
-        ],
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            ListView(),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width - 60,
-                        child: Card(
-                          margin: const EdgeInsets.only(left: 3, bottom: 8),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25)),
-                          child: TextFormField(
-                            controller: textEditingController,
-                            focusNode: focusNode,
-                            textAlignVertical: TextAlignVertical.center,
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 5,
-                            minLines: 1,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Type a message",
-                              prefixIcon: IconButton(
-                                icon: const Icon(Icons.emoji_emotions),
-                                onPressed: () {
-                                  focusNode.unfocus();
-                                  focusNode.canRequestFocus = false;
-                                  setState(() {
-                                    showEmojis = !showEmojis;
-                                  });
-                                },
-                              ),
-                              suffixIcon: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.attach_file),
-                                    onPressed: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (builder) => bottomSheet(),
-                                        backgroundColor: Colors.transparent,
-                                      );
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.camera_alt),
-                                    onPressed: () {},
-                                  ),
-                                ],
-                              ),
-                              contentPadding: const EdgeInsets.all(5),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(bottom: 8, right: 3, left: 3),
-                        child: CircleAvatar(
-                          backgroundColor: Colors.pink,
-                          radius: 25,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.mic,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  showEmojis ? emojiSelect() : Container(),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+      ],
     );
   }
 

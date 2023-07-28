@@ -6,6 +6,8 @@ class Config{
   static const String profileAPI="/user/profile";
   static const String getUserChatsAPI="/chats/";
   static const String createChatsAPI="/chats/";
+  static const String wallpapersUrl="/images/wallpapers/";
+
 
 
 

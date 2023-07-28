@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Screens/HomeScreen.dart';
 import 'package:heyu_front/Screens/auth/LandingPage.dart';
@@ -14,6 +16,7 @@ void main() async{
   if(result){
     defaultHome=const HomeScreen();
   }
+  SecurityContext.defaultContext.setAlpnProtocols(['TLSv1.2'], true);
   runApp(const MyApp());
 
 }
