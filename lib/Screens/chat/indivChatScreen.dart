@@ -2,6 +2,7 @@ import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Models/MessageModel.dart';
+import 'package:heyu_front/Models/UserModel.dart';
 import 'package:heyu_front/Screens/chat/OwnMessageCard.dart';
 import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
 import 'package:heyu_front/Services/message_service.dart';
@@ -230,11 +231,16 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                               backgroundColor: Colors.pink,
                               radius: 25,
                               child: IconButton(
-                                icon: Icon(
-                                  Icons.mic,
+                                icon: const Icon(
+                                  Icons.send,
                                   color: Colors.white,
                                 ),
-                                onPressed: () {},
+                                onPressed: () async{
+                                  String reciver=await reciverId();
+                                  MessageServive.sendMessage(textEditingController.text, reciver, widget.chatModel.chatId);
+
+                                  print(textEditingController.text);
+                                },
                               ),
                             ),
                           ),
@@ -353,5 +359,15 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     } catch (e) {
       print('Error loading chats: $e');
     }
+  }
+
+  Future<String> reciverId()async{
+    String connectedId=await SharedService.userId();
+    for(UserModel user in widget.chatModel.users){
+      if(user.uId!=connectedId) {
+        return user.uId;
+      }
+    }
+    throw Exception("Receiver ID not found.");
   }
 }

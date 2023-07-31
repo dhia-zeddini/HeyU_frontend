@@ -22,28 +22,26 @@ class MessageServive{
     var response=await client.get(
       url,
       headers: requestHeaders,
-
     );
-    print(url);
     if(response.statusCode==200){
       var data=jsonDecode(response.body);
-      print(data);
-
       return messagesFromJson(data);
     }else{
       return null;
     }
   }
-/*  static Future<bool> createChat(String contact)async{
+  static Future<bool> sendMessage(String content,String reciver,String chat)async{
     var userToken=await SharedService.loginDetails();
     Map<String,String> requestHeaders={
       'Content-Type':'application/json',
       'token':"Bearer ${userToken!.token}"
     };
     Map<String, String> requestBody = {
-      "userId": contact,
+      "content":content,
+      "chatId":chat,
+      "receiverId":reciver
     };
-    var url=Uri.http(Config.apiURL,Config.createChatAPI);
+    var url=Uri.http(Config.apiURL,Config.chatMessages);
     var response=await client.post(
       url,
       headers: requestHeaders,
@@ -56,6 +54,6 @@ class MessageServive{
     }else{
       return false;
     }
-  }*/
+  }
 
 }
