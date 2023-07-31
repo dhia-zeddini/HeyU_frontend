@@ -27,6 +27,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         backgroundColor: Colors.pink,
         onPressed: () {
           // Add new chat
+          ChatService.createChat("64c706750e0bb48102b6ca26");
           Navigator.push(context, MaterialPageRoute(builder: (builder)=>SelectContact()));
         },
         child: const Icon(Icons.chat),

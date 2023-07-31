@@ -1,9 +1,13 @@
 import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
+import 'package:heyu_front/Models/MessageModel.dart';
 import 'package:heyu_front/Screens/chat/OwnMessageCard.dart';
 import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
+import 'package:heyu_front/Services/message_service.dart';
+import 'package:heyu_front/Services/shared_service.dart';
 import 'package:heyu_front/config.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class IndivChatScreen extends StatefulWidget {
   const IndivChatScreen({super.key, required this.chatModel});
@@ -17,11 +21,14 @@ class IndivChatScreen extends StatefulWidget {
 class _IndivChatScreenState extends State<IndivChatScreen> {
   bool showEmojis = false;
   FocusNode focusNode = FocusNode();
+  late IO.Socket socket;
   TextEditingController textEditingController = TextEditingController();
+  List<MessageModel> messages = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadMessages();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         setState(() {
@@ -31,14 +38,22 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     });
   }
 
+/*void connect(){
+    socket=IO.io(uri)
+}*/
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.network("http://"+Config.apiURL+Config.wallpapersUrl+widget.chatModel.wallpaper,
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.cover,),
+        Image.network(
+          "http://" +
+              Config.apiURL +
+              Config.wallpapersUrl +
+              widget.chatModel.wallpaper,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -127,25 +142,30 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
             child: Stack(
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height-140,
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      OwnMessageCard(),
-                      ReplyMessageCard(),
-                      OwnMessageCard(),
-                      ReplyMessageCard(),
-                      OwnMessageCard(),
-                      ReplyMessageCard(),
-                      OwnMessageCard(),
-                      ReplyMessageCard(),
-                      OwnMessageCard(),
-                      ReplyMessageCard(),
-                      OwnMessageCard(),
-                      ReplyMessageCard(),
-                    ],
-                  ),
-                ),
+                    height: MediaQuery.of(context).size.height - 140,
+                    child: FutureBuilder<String>(
+                      future: SharedService.userId(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text(
+                              "Erreur lors de la récupération de l'ID utilisateur.");
+                        } else {
+                          String userId = snapshot.data ?? "";
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) =>
+                                  messages[index].sender == userId
+                                      ? OwnMessageCard(
+                                          messageModel: messages[index])
+                                      : ReplyMessageCard(
+                                          messageModel: messages[index]));
+                        }
+                      },
+                    )),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Column(
@@ -204,8 +224,8 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                             ),
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 8, right: 3, left: 3),
+                            padding: const EdgeInsets.only(
+                                bottom: 8, right: 3, left: 3),
                             child: CircleAvatar(
                               backgroundColor: Colors.pink,
                               radius: 25,
@@ -251,28 +271,39 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
       child: Card(
         margin: EdgeInsets.all(18),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  iconCreation(Icons.insert_drive_file,Colors.blue,"Document"),
-                  const SizedBox(width: 40,),
-                  iconCreation(Icons.camera_alt,Colors.pink,"Camera"),
-                  const SizedBox(width: 40,),
-                  iconCreation(Icons.insert_photo,Colors.purple,"Gallery"),
+                  iconCreation(
+                      Icons.insert_drive_file, Colors.blue, "Document"),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  iconCreation(Icons.camera_alt, Colors.pink, "Camera"),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  iconCreation(Icons.insert_photo, Colors.purple, "Gallery"),
                 ],
               ),
-              const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  iconCreation(Icons.headset,Colors.orange,"Audio"),
-                  const SizedBox(width: 40,),
-                  iconCreation(Icons.location_pin,Colors.cyan,"Location"),
-                  const SizedBox(width: 40,),
-                  iconCreation(Icons.person,Colors.lightGreen,"Contact"),
+                  iconCreation(Icons.headset, Colors.orange, "Audio"),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  iconCreation(Icons.location_pin, Colors.cyan, "Location"),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  iconCreation(Icons.person, Colors.lightGreen, "Contact"),
                 ],
               ),
             ],
@@ -284,7 +315,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
 
   Widget iconCreation(IconData icon, Color color, String text) {
     return InkWell(
-      onTap: (){},
+      onTap: () {},
       child: Column(
         children: [
           CircleAvatar(
@@ -296,9 +327,11 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(
+            height: 5,
+          ),
           Text(
-              text,
+            text,
             style: const TextStyle(
               fontSize: 12,
             ),
@@ -306,5 +339,19 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> loadMessages() async {
+    try {
+      List<MessageModel>? chatMessages =
+          await MessageServive.getChatMessages(widget.chatModel.chatId);
+      if (chatMessages != null) {
+        setState(() {
+          messages = chatMessages;
+        });
+      }
+    } catch (e) {
+      print('Error loading chats: $e');
+    }
   }
 }

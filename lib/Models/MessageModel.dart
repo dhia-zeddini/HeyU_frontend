@@ -1,6 +1,8 @@
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Models/UserModel.dart';
 
+List<MessageModel> messagesFromJson(dynamic str) =>
+    List<MessageModel>.from((str).map((x) => MessageModel.fromJson(x)));
 class MessageModel {
   late String messageId;
   late String sender;

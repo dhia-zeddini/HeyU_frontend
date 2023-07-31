@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:heyu_front/Services/shared_service.dart';
+
+import '../../Models/MessageModel.dart';
 
 class ReplyMessageCard extends StatelessWidget {
-  const ReplyMessageCard({super.key});
-
+  const ReplyMessageCard({super.key,required this.messageModel});
+  final MessageModel messageModel;
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -22,7 +25,7 @@ class ReplyMessageCard extends StatelessWidget {
                 padding:
                     EdgeInsets.only(left: 10, right: 60, top: 5, bottom: 25),
                 child: Text(
-                  "hey ",
+                  messageModel.content,
                   style: TextStyle(
                     fontSize: 16,
                   ),
@@ -32,7 +35,7 @@ class ReplyMessageCard extends StatelessWidget {
                 bottom: 4,
                 right: 10,
                 child: Text(
-                  "12:12",
+                  SharedService.msgTime(messageModel.createdAt),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.white,

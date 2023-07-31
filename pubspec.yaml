@@ -40,6 +40,10 @@ dependencies:
   flutter_native_splash: ^2.3.1
   snippet_coder_utils: ^1.0.13
   emoji_selector: ^0.0.6
+  socket_io_client: ^2.0.2
+  date_time_format: ^2.0.1
+  jwt_decoder: ^2.0.1
+
 
 
 flutter_native_splash:

@@ -1,67 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Screens/chat/indivChatScreen.dart';
+/*import 'package:intl/intl.dart';*/
+import 'package:date_time_format/date_time_format.dart';
+import 'package:heyu_front/Services/shared_service.dart';
 
 class ChatItem extends StatelessWidget {
-  const ChatItem({super.key,required this.chatModel});
+  const ChatItem({super.key, required this.chatModel});
   final ChatModel chatModel;
-
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>IndivChatScreen(chatModel: chatModel,)));
+      onTap: () async {
+          print("true");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => IndivChatScreen(
+              chatModel: chatModel,
+            ),
+          ),
+        );
       },
       child: Column(
         children: [
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage("https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
+              backgroundImage: NetworkImage(
+                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
               radius: 30,
             ),
             title: Text(
-                chatModel.chatName,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              chatModel.chatName,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            subtitle: Text(
+              chatModel.messages![0].content,
+              style: const TextStyle(
+                fontSize: 13,
+              ),
             ),
-            subtitle: Row(
+            trailing: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Icon(Icons.done_all),
-                const SizedBox(width: 3,),
-                Text(
-                  chatModel.messages![0].content,
-                  style: const TextStyle(
-                    fontSize: 13,
-                  ),
+                Text(SharedService.msgTime(chatModel.messages![0].createdAt)),
+                /*const SizedBox(height: 4,),*/
+                FutureBuilder<bool>(
+                  future: SharedService.messageSenderTest(chatModel.messages![0].sender),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Icon(Icons.error, color: Colors.red);
+                    } else {
+                      bool isSender = snapshot.data ?? false;
+                      return Icon(
+                        isSender ? Icons.arrow_circle_right : Icons.arrow_circle_left,
+                        color: Colors.blueAccent,
+                      );
+                    }
+                  },
                 ),
               ],
             ),
-            trailing: Text(chatModel.messages![0].createdAt.toString()),
           ),
           const Padding(
-            padding: EdgeInsets.only(right: 20,left: 80),
-            child: Divider(thickness: 1,),
+            padding: EdgeInsets.only(right: 20, left: 80),
+            child: Divider(
+              thickness: 1,
+            ),
           )
         ],
       ),
     );
-
   }
-  /*String latestMessage(){
-    var msg = chatModel.messages != null
-        ? chatModel!.messages![1]
-        : "";
-
-    return msg;
-  }
-  String latestMessageTime(){
-    var msg = chatModel.messages != null
-        ? chatModel!.messages![1]
-        : "";
-
-    return msg.toString();
-  }*/
 }
