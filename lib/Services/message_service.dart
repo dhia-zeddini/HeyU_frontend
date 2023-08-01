@@ -30,7 +30,7 @@ class MessageServive{
       return null;
     }
   }
-  static Future<bool> sendMessage(String content,String reciver,String chat)async{
+  static Future<List<dynamic>> sendMessage(String content,String reciver,String chat)async{
     var userToken=await SharedService.loginDetails();
     Map<String,String> requestHeaders={
       'Content-Type':'application/json',
@@ -47,12 +47,16 @@ class MessageServive{
       headers: requestHeaders,
       body: jsonEncode(requestBody),
     );
-    print(url);
-    print(response.body);
+    /*print(url);
+    print(response.body);*/
     if(response.statusCode==200){
-      return true;
+      MessageModel msg=MessageModel.fromJson(jsonDecode(response.body));
+      print(msg);
+
+      var messsageMap=msg.toJson();
+      return [true,msg,messsageMap];
     }else{
-      return false;
+      return [false];
     }
   }
 

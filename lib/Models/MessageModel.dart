@@ -49,8 +49,8 @@ class MessageModel {
     data['content'] = content;
     data['receiverId'] = receiverId;
     data['chatId'] = chatId;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
+    data['createdAt'] = createdAt.toString();
+    data['updatedAt'] = updatedAt.toString();
     data['deleted'] = deleted!.map((v) => v).toList();
 
     return data;

@@ -20,15 +20,22 @@ class IndivChatScreen extends StatefulWidget {
 }
 
 class _IndivChatScreenState extends State<IndivChatScreen> {
+  final String url="http://${Config.apiURL}";
   bool showEmojis = false;
   FocusNode focusNode = FocusNode();
-  late IO.Socket socket;
+  late IO.Socket socket=IO.io(url,<String,dynamic>{
+    "transports":['websocket'],
+    "autoConnect":false,
+  });
+  late bool typing=false;
   TextEditingController textEditingController = TextEditingController();
   List<MessageModel> messages = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    connect();
+    joinChat();
     loadMessages();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -39,9 +46,52 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     });
   }
 
-/*void connect(){
-    socket=IO.io(uri)
-}*/
+void connect()async{
+  String connectedId=await SharedService.userId();
+    socket.emit("setup",connectedId);
+    socket.connect();
+    socket.onConnect((_) {
+      print("connected to front end");
+      //joinChat();
+      socket.on('typing',(status){
+        typing=false;
+        print("typing");
+      });
+      socket.on('stop typing',(status){
+        typing=true;
+      });
+      socket.on('message received',(newMessageReceived){
+        print("*************");
+        MessageModel receivedMessage=MessageModel.fromJson(newMessageReceived);
+        print(receivedMessage);
+
+        setState(() {
+          messages.insert(messages.length, receivedMessage);
+        });
+      });
+    });
+}
+
+void joinChat(){
+    socket.emit('join chat',widget.chatModel.chatId);
+}
+void sendTypingEvent(String status){
+    socket.emit('typing',status);
+}
+  void sendStopTypingEvent(String status){
+    socket.emit('stop typing',status);
+  }
+
+void sendMsg(String content,String reciver,String chat){
+    MessageServive.sendMessage(content, reciver, chat).then((response) {
+      var emission=response[2];
+      socket.emit("new message",emission);
+      setState(() {
+        textEditingController.clear();
+        messages.insert(messages.length, response[1]);
+      });
+    });
+}
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -92,9 +142,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    const Text(
-                      "last seen today at 18:18",
-                      style: TextStyle(
+                     Text(
+                      !typing?"last seen today at 18:18":"typing ....",
+                      style: const TextStyle(
                         fontSize: 13,
                       ),
                     )
@@ -187,6 +237,14 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                 keyboardType: TextInputType.multiline,
                                 maxLines: 5,
                                 minLines: 1,
+                                onTapOutside: (_){
+                                  focusNode.unfocus();
+                                  focusNode.canRequestFocus = false;
+                                  sendStopTypingEvent(widget.chatModel.chatId);
+                                },
+                                onChanged: (_){
+                                  sendTypingEvent(widget.chatModel.chatId);
+                                },
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintText: "Type a message",
@@ -237,7 +295,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                 ),
                                 onPressed: () async{
                                   String reciver=await reciverId();
-                                  MessageServive.sendMessage(textEditingController.text, reciver, widget.chatModel.chatId);
+                                  sendMsg(textEditingController.text, reciver, widget.chatModel.chatId);
 
                                   print(textEditingController.text);
                                 },
@@ -367,6 +425,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
       if(user.uId!=connectedId) {
         return user.uId;
       }
+      
     }
     throw Exception("Receiver ID not found.");
   }
