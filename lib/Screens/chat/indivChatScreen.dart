@@ -67,21 +67,27 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         });
       });*/
       socket.on('new message', (newMessageReceived) {
-        print("*************");
-        print(newMessageReceived);
-        MessageModel receivedMessage =
-            MessageModel.fromSocket(newMessageReceived);
-        print("******new msg*******");
-        print(receivedMessage);
-
-        setState(() {
-          /*messages.insert(messages.length, receivedMessage);*/
-          /*loadMessages();*/
-          messages.add(receivedMessage);
-          print("donne");
-          avatar =
-              "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
-        });
+        if (mounted) {
+          print("*************");
+          print(newMessageReceived);
+          MessageModel receivedMessage =
+              MessageModel.fromSocket(newMessageReceived);
+          print("******new msg*******");
+          print(receivedMessage);
+          /* List<MessageModel> Curentmessages = messages;
+          Curentmessages.add(receivedMessage);*/
+          setState(() {
+            messages.insert(messages.length, receivedMessage);
+            /*loadMessages();*/
+            /*messages.add(receivedMessage);*/
+            /* messages = Curentmessages;*/
+            print("donne");
+            /*avatar =
+            "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";*/
+          });
+        } else {
+          print("not mounted");
+        }
       });
     });
   }
@@ -107,6 +113,15 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         messages.insert(messages.length, response[1]);
       });
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    socket.off('setup');
+    socket.off('new message');
+    socket.disconnect();
+    super.dispose();
   }
 
   @override
