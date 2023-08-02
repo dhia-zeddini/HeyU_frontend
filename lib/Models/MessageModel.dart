@@ -38,12 +38,27 @@ class MessageModel {
       });
     }
   }
+  MessageModel.fromSocket(Map<String, dynamic> json) {
+    messageId = json['_id'];
+    sender = json['sender'];
+    content = json['content'];
+    receiverId = json['receiverId'];
+    chatId = json['chatId'];
+    createdAt = DateTime.parse(json['createdAt']);
+    updatedAt = DateTime.parse(json['updatedAt']);
+    if (json['deleted'] != null) {
+      deleted = <String>[];
+      json['deleted'].forEach((v) {
+        deleted!.add(v);
+      });
+    }
+  }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    /*if (this.messageId != null) {
-      data['_id'] = this.iId.toJson();
-    }*/
+    if (this.messageId != null) {
+      data['_id'] = messageId;
+    }
 
     data['sender'] = sender;
     data['content'] = content;

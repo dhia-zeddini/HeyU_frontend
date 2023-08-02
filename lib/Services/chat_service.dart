@@ -45,8 +45,8 @@ class ChatService{
       headers: requestHeaders,
       body: jsonEncode(requestBody),
     );
-    print(url);
-    print(response.body);
+   /* print(url);
+    print(response.body);*/
     if(response.statusCode==200){
       return true;
     }else{

@@ -32,10 +32,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
         },
         child: const Icon(Icons.chat),
       ),
-      body: ListView.builder(
+      body: chats.length>0?ListView.builder(
         itemCount: chats.length,
         itemBuilder: (context, index) => ChatItem(chatModel: chats[index]),
-      ),
+      ):Container(),
     );
   }
 

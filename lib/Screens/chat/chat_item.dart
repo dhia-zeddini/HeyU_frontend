@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Screens/chat/indivChatScreen.dart';
-/*import 'package:intl/intl.dart';*/
-import 'package:date_time_format/date_time_format.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 
 class ChatItem extends StatelessWidget {
@@ -13,7 +11,6 @@ class ChatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-          print("true");
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -26,7 +23,7 @@ class ChatItem extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: CircleAvatar(
+            leading: const CircleAvatar(
               backgroundImage: NetworkImage(
                   "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
               radius: 30,
@@ -53,9 +50,9 @@ class ChatItem extends StatelessWidget {
                   future: SharedService.messageSenderTest(chatModel.messages![0].sender),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else if (snapshot.hasError) {
-                      return Icon(Icons.error, color: Colors.red);
+                      return const Icon(Icons.error, color: Colors.red);
                     } else {
                       bool isSender = snapshot.data ?? false;
                       return Icon(

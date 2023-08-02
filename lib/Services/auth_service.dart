@@ -23,7 +23,7 @@ class AuthService{
       headers: requestHeaders,
       body: jsonEncode(model.toJson()),
     );
-    print(url);
+    /*print(url);*/
     if(response.statusCode==200){
       await SharedService.setLogindetails(loginResponseJson(response.body));
 

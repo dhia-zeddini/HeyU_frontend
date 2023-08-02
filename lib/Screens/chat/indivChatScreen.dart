@@ -20,14 +20,16 @@ class IndivChatScreen extends StatefulWidget {
 }
 
 class _IndivChatScreenState extends State<IndivChatScreen> {
-  final String url="http://${Config.apiURL}";
+  String avatar =
+      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
+  final String url = "http://${Config.apiURL}";
   bool showEmojis = false;
   FocusNode focusNode = FocusNode();
-  late IO.Socket socket=IO.io(url,<String,dynamic>{
-    "transports":['websocket'],
-    "autoConnect":false,
+  late IO.Socket socket = IO.io(url, <String, dynamic>{
+    "transports": ['websocket'],
+    "autoConnect": false,
   });
-  late bool typing=false;
+  late bool typing = false;
   TextEditingController textEditingController = TextEditingController();
   List<MessageModel> messages = [];
   @override
@@ -46,52 +48,67 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     });
   }
 
-void connect()async{
-  String connectedId=await SharedService.userId();
-    socket.emit("setup",connectedId);
+  void connect() async {
+    String connectedId = await SharedService.userId();
+    socket.emit("setup", connectedId);
     socket.connect();
     socket.onConnect((_) {
       print("connected to front end");
       //joinChat();
-      socket.on('typing',(status){
+      /* socket.on('typing',(status){
+        setState(() {
         typing=false;
+        });
         print("typing");
       });
       socket.on('stop typing',(status){
-        typing=true;
-      });
-      socket.on('message received',(newMessageReceived){
+        setState(() {
+          typing=true;
+        });
+      });*/
+      socket.on('new message', (newMessageReceived) {
         print("*************");
-        MessageModel receivedMessage=MessageModel.fromJson(newMessageReceived);
+        print(newMessageReceived);
+        MessageModel receivedMessage =
+            MessageModel.fromSocket(newMessageReceived);
+        print("******new msg*******");
         print(receivedMessage);
 
         setState(() {
-          messages.insert(messages.length, receivedMessage);
+          /*messages.insert(messages.length, receivedMessage);*/
+          /*loadMessages();*/
+          messages.add(receivedMessage);
+          print("donne");
+          avatar =
+              "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
         });
       });
     });
-}
-
-void joinChat(){
-    socket.emit('join chat',widget.chatModel.chatId);
-}
-void sendTypingEvent(String status){
-    socket.emit('typing',status);
-}
-  void sendStopTypingEvent(String status){
-    socket.emit('stop typing',status);
   }
 
-void sendMsg(String content,String reciver,String chat){
+  void joinChat() {
+    socket.emit('join chat', widget.chatModel.chatId);
+  }
+
+  void sendTypingEvent(String status) {
+    socket.emit('typing', status);
+  }
+
+  void sendStopTypingEvent(String status) {
+    socket.emit('stop typing', status);
+  }
+
+  void sendMsg(String content, String reciver, String chat) {
     MessageServive.sendMessage(content, reciver, chat).then((response) {
-      var emission=response[2];
-      socket.emit("new message",emission);
+      var emission = response[2];
+      socket.emit("new message", emission);
       setState(() {
         textEditingController.clear();
         messages.insert(messages.length, response[1]);
       });
     });
-}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -124,8 +141,7 @@ void sendMsg(String content,String reciver,String chat){
                     )),
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(
-                      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
+                  backgroundImage: NetworkImage(avatar),
                 )
               ],
             ),
@@ -142,8 +158,8 @@ void sendMsg(String content,String reciver,String chat){
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                     Text(
-                      !typing?"last seen today at 18:18":"typing ....",
+                    Text(
+                      !typing ? "last seen today at 18:18" : "typing ....",
                       style: const TextStyle(
                         fontSize: 13,
                       ),
@@ -159,24 +175,24 @@ void sendMsg(String content,String reciver,String chat){
                 itemBuilder: (BuildContext context) {
                   return [
                     const PopupMenuItem(
-                      child: Text("Profile"),
                       value: "profile",
+                      child: Text("Profile"),
                     ),
                     const PopupMenuItem(
-                      value: "brodcast",
-                      child: const Text("New brodcast"),
+                      value: "broadcast",
+                      child: Text("New broadcast"),
                     ),
                     const PopupMenuItem(
-                      child: const Text("Archive"),
                       value: "archive",
+                      child: Text("Archive"),
                     ),
                     const PopupMenuItem(
-                      child: const Text("Settings"),
                       value: "settings",
+                      child: Text("Settings"),
                     ),
                     const PopupMenuItem(
-                      child: const Text("Logout"),
                       value: "logout",
+                      child: Text("Logout"),
                     ),
                   ];
                 },
@@ -199,9 +215,9 @@ void sendMsg(String content,String reciver,String chat){
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return const CircularProgressIndicator();
                         } else if (snapshot.hasError) {
-                          return Text(
+                          return const Text(
                               "Erreur lors de la récupération de l'ID utilisateur.");
                         } else {
                           String userId = snapshot.data ?? "";
@@ -237,12 +253,12 @@ void sendMsg(String content,String reciver,String chat){
                                 keyboardType: TextInputType.multiline,
                                 maxLines: 5,
                                 minLines: 1,
-                                onTapOutside: (_){
+                                onTapOutside: (_) {
                                   focusNode.unfocus();
                                   focusNode.canRequestFocus = false;
                                   sendStopTypingEvent(widget.chatModel.chatId);
                                 },
-                                onChanged: (_){
+                                onChanged: (_) {
                                   sendTypingEvent(widget.chatModel.chatId);
                                 },
                                 decoration: InputDecoration(
@@ -293,11 +309,10 @@ void sendMsg(String content,String reciver,String chat){
                                   Icons.send,
                                   color: Colors.white,
                                 ),
-                                onPressed: () async{
-                                  String reciver=await reciverId();
-                                  sendMsg(textEditingController.text, reciver, widget.chatModel.chatId);
-
-                                  print(textEditingController.text);
+                                onPressed: () async {
+                                  String reciver = await receiverId();
+                                  sendMsg(textEditingController.text, reciver,
+                                      widget.chatModel.chatId);
                                 },
                               ),
                             ),
@@ -333,7 +348,7 @@ void sendMsg(String content,String reciver,String chat){
       height: 278,
       width: MediaQuery.of(context).size.width,
       child: Card(
-        margin: EdgeInsets.all(18),
+        margin: const EdgeInsets.all(18),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           child: Column(
@@ -419,13 +434,12 @@ void sendMsg(String content,String reciver,String chat){
     }
   }
 
-  Future<String> reciverId()async{
-    String connectedId=await SharedService.userId();
-    for(UserModel user in widget.chatModel.users){
-      if(user.uId!=connectedId) {
+  Future<String> receiverId() async {
+    String connectedId = await SharedService.userId();
+    for (UserModel user in widget.chatModel.users) {
+      if (user.uId != connectedId) {
         return user.uId;
       }
-      
     }
     throw Exception("Receiver ID not found.");
   }
