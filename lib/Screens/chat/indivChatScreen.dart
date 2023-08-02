@@ -37,7 +37,6 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     // TODO: implement initState
     super.initState();
     connect();
-    joinChat();
     loadMessages();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -53,42 +52,43 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     socket.emit("setup", connectedId);
     socket.connect();
     socket.onConnect((_) {
-      print("connected to front end");
-      //joinChat();
-      /* socket.on('typing',(status){
-        setState(() {
-        typing=false;
+      if (mounted) {
+        print("connected to front end");
+        joinChat();
+        socket.on('typing', (status) {
+          //if (mounted) {
+            setState(() {
+              typing = true;
+            });
+            print("typing");
+          /*}else{
+            print("not typing");
+          }*/
         });
-        print("typing");
-      });
-      socket.on('stop typing',(status){
-        setState(() {
-          typing=true;
+        socket.on('stop typing', (status) {
+          setState(() {
+            typing = false;
+          });
         });
-      });*/
-      socket.on('new message', (newMessageReceived) {
-        if (mounted) {
+        socket.on('new message', (newMessageReceived) {
+          //if (mounted) {
           print("*************");
           print(newMessageReceived);
           MessageModel receivedMessage =
               MessageModel.fromSocket(newMessageReceived);
           print("******new msg*******");
           print(receivedMessage);
-          /* List<MessageModel> Curentmessages = messages;
-          Curentmessages.add(receivedMessage);*/
           setState(() {
             messages.insert(messages.length, receivedMessage);
-            /*loadMessages();*/
-            /*messages.add(receivedMessage);*/
-            /* messages = Curentmessages;*/
             print("donne");
-            /*avatar =
-            "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";*/
           });
-        } else {
+          /*} else {
           print("not mounted");
-        }
-      });
+        }*/
+        });
+      } else {
+        print("not mounted");
+      }
     });
   }
 
@@ -119,6 +119,8 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   void dispose() {
     // TODO: implement dispose
     socket.off('setup');
+    socket.off('typing');
+    socket.off('stop typing');
     socket.off('new message');
     socket.disconnect();
     super.dispose();
@@ -268,13 +270,15 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                 keyboardType: TextInputType.multiline,
                                 maxLines: 5,
                                 minLines: 1,
-                                onTapOutside: (_) {
+                                onTapOutside: (_) async{
                                   focusNode.unfocus();
                                   focusNode.canRequestFocus = false;
-                                  sendStopTypingEvent(widget.chatModel.chatId);
+                                  String receiver = await receiverId();
+                                  sendStopTypingEvent(receiver);
                                 },
-                                onChanged: (_) {
-                                  sendTypingEvent(widget.chatModel.chatId);
+                                onChanged: (_) async{
+                                  String receiver = await receiverId();
+                                  sendTypingEvent(receiver);
                                 },
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
