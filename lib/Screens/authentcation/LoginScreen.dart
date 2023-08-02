@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   color: Colors.pinkAccent.withOpacity(0.7),
                   icon: Icon(
-                    hidePwd ? Icons.visibility_off : Icons.visibility,
+                    hidePwd ?  Icons.visibility: Icons.visibility_off,
                   )),
             ),
           ),

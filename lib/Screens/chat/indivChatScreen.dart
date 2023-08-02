@@ -32,6 +32,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   late bool typing = false;
   TextEditingController textEditingController = TextEditingController();
   List<MessageModel> messages = [];
+  ScrollController scrollController = ScrollController();
   @override
   void initState() {
     // TODO: implement initState
@@ -57,10 +58,10 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         joinChat();
         socket.on('typing', (status) {
           //if (mounted) {
-            setState(() {
-              typing = true;
-            });
-            print("typing");
+          setState(() {
+            typing = true;
+          });
+          print("typing");
           /*}else{
             print("not typing");
           }*/
@@ -112,7 +113,16 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         textEditingController.clear();
         messages.insert(messages.length, response[1]);
       });
+      scrollToBottom();
     });
+  }
+
+  void scrollToBottom() {
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -223,33 +233,33 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
           body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: Stack(
+            child: Column(
               children: [
-                Container(
-                    height: MediaQuery.of(context).size.height - 140,
+                Expanded(
+                    //height: MediaQuery.of(context).size.height - 140,
                     child: FutureBuilder<String>(
-                      future: SharedService.userId(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return const Text(
-                              "Erreur lors de la récupération de l'ID utilisateur.");
-                        } else {
-                          String userId = snapshot.data ?? "";
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: messages.length,
-                              itemBuilder: (context, index) =>
-                                  messages[index].sender == userId
-                                      ? OwnMessageCard(
-                                          messageModel: messages[index])
-                                      : ReplyMessageCard(
-                                          messageModel: messages[index]));
-                        }
-                      },
-                    )),
+                  future: SharedService.userId(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return const Text(
+                          "Erreur lors de la récupération de l'ID utilisateur.");
+                    } else {
+                      String userId = snapshot.data ?? "";
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          controller: scrollController,
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) => messages[index]
+                                      .sender ==
+                                  userId
+                              ? OwnMessageCard(messageModel: messages[index])
+                              : ReplyMessageCard(
+                                  messageModel: messages[index]));
+                    }
+                  },
+                )),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Column(
@@ -270,13 +280,13 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                 keyboardType: TextInputType.multiline,
                                 maxLines: 5,
                                 minLines: 1,
-                                onTapOutside: (_) async{
+                                onTapOutside: (_) async {
                                   focusNode.unfocus();
-                                  focusNode.canRequestFocus = false;
+                                  //focusNode.canRequestFocus = false;
                                   String receiver = await receiverId();
                                   sendStopTypingEvent(receiver);
                                 },
-                                onChanged: (_) async{
+                                onChanged: (_) async {
                                   String receiver = await receiverId();
                                   sendTypingEvent(receiver);
                                 },
@@ -329,8 +339,8 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                   color: Colors.white,
                                 ),
                                 onPressed: () async {
-                                  String reciver = await receiverId();
-                                  sendMsg(textEditingController.text, reciver,
+                                  String receiver = await receiverId();
+                                  sendMsg(textEditingController.text, receiver,
                                       widget.chatModel.chatId);
                                 },
                               ),
@@ -338,7 +348,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                           ),
                         ],
                       ),
-                      showEmojis ? emojiSelect() : Container(),
+                      Container(
+                          color: Colors.white,
+                          child: showEmojis ? emojiSelect() : Container()),
                     ],
                   ),
                 )
@@ -358,7 +370,6 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
           textEditingController.text = textEditingController.text + emoji.char;
         });
       },
-      /*padding: EdgeInsets.only(top: 60),*/
     );
   }
 
@@ -447,6 +458,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         setState(() {
           messages = chatMessages;
         });
+        scrollController.animateTo(scrollController.position.maxScrollExtent,
+            duration: const Duration(microseconds: 300),
+            curve: Curves.easeInOut);
       }
     } catch (e) {
       print('Error loading chats: $e');

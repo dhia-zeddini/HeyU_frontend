@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/Login_response_model.dart';
+import 'package:heyu_front/Screens/CameraPage.dart';
 import 'package:heyu_front/Screens/chat/chatsScreen.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 
@@ -96,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       body: TabBarView(
         controller: tabController,
         children: [
-          Text("camera"),
+          CameraPage(),
           ChatsScreen(),
           Text("groups"),
           Text("calls"),

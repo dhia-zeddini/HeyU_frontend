@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Screens/HomeScreen.dart';
 import 'package:heyu_front/Screens/auth/LandingPage.dart';
@@ -8,10 +9,12 @@ import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
 import 'package:heyu_front/Screens/chat/chatsScreen.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 
+import 'Screens/CameraScreen.dart';
 Widget defaultHome=const LandingPage();
 
-void main() async{
+Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
   bool result=await SharedService.isLoggedIn();
   if(result){
     defaultHome=const HomeScreen();
