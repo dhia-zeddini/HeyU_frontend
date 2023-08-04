@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Screens/chat/chat_item.dart';
-import 'package:heyu_front/Screens/chat/selectContact.dart';
+import 'package:heyu_front/Screens/contacts/selectContact.dart';
 import 'package:heyu_front/Services/chat_service.dart';
+import 'package:heyu_front/Services/user_service.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({Key? key}) : super(key: key);
@@ -27,12 +28,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
         backgroundColor: Colors.pink,
         onPressed: () {
           // Add new chat
-          ChatService.createChat("64c706750e0bb48102b6ca26");
+          //ChatService.createChat("64c706750e0bb48102b6ca26");
+          UserService.getUserContacts();
           Navigator.push(context, MaterialPageRoute(builder: (builder)=>SelectContact()));
         },
         child: const Icon(Icons.chat),
       ),
-      body: chats.length>0?ListView.builder(
+      body: chats.isNotEmpty?ListView.builder(
         itemCount: chats.length,
         itemBuilder: (context, index) => ChatItem(chatModel: chats[index]),
       ):Container(),
@@ -40,15 +42,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Future<void> loadChats() async {
-    //try {
+    try {
       List<ChatModel>? userChats = await ChatService.getUserChats();
       if (userChats != null) {
         setState(() {
           chats = userChats;
         });
       }
-   /* } catch (e) {
+    } catch (e) {
       print('Error loading chats: $e');
-    }*/
+    }
   }
 }

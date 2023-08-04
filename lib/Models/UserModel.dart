@@ -1,3 +1,7 @@
+
+List<UserModel> usersFromJson(dynamic str) =>
+    List<UserModel>.from((str).map((x) => UserModel.fromJson(x)));
+
 class UserModel {
   late String uId;
   late String firstName;
