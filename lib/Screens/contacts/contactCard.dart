@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/UserModel.dart';
 
+import '../../Services/chat_service.dart';
+import '../chat/indivChatScreen.dart';
+
 class ContactCard extends StatelessWidget {
   const ContactCard({super.key,required this.contact});
   final UserModel contact;
@@ -8,7 +11,26 @@ class ContactCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){},
+      onTap: (){
+        ChatService.createChat(contact.uId).then((response)  {
+          if(response[0]){
+            var id = response[1].chatId;
+            print(id);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IndivChatScreen(
+                  chatModel: response[1],
+                ),
+              ),
+            );
+          }else{
+            print("error");
+          }
+
+
+        });
+      },
       child: ListTile(
         leading: CircleAvatar(
           radius: 23,

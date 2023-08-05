@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Models/MessageModel.dart';
 import 'package:heyu_front/Models/UserModel.dart';
+import 'package:heyu_front/Screens/HomeScreen.dart';
 import 'package:heyu_front/Screens/chat/OwnMessageCard.dart';
 import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
 import 'package:heyu_front/Services/message_service.dart';
@@ -160,7 +161,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               children: [
                 InkWell(
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
                     },
                     child: const Icon(
                       Icons.arrow_back,

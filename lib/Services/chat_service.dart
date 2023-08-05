@@ -30,7 +30,7 @@ class ChatService{
       return null;
     }
   }
-  static Future<bool> createChat(String contact)async{
+  static Future<List<dynamic>> createChat(String contact)async{
     var userToken=await SharedService.loginDetails();
     Map<String,String> requestHeaders={
       'Content-Type':'application/json',
@@ -45,12 +45,13 @@ class ChatService{
       headers: requestHeaders,
       body: jsonEncode(requestBody),
     );
-   /* print(url);
-    print(response.body);*/
+   /* print(url);*/
+    print(response.statusCode);
     if(response.statusCode==200){
-      return true;
+      ChatModel chat=ChatModel.fromJson(jsonDecode(response.body));
+      return [true,chat];
     }else{
-      return false;
+      return [false];
     }
   }
 

@@ -73,24 +73,19 @@ class _SelectContactState extends State<SelectContact> {
             )
           ],
         ),
-        body:
-            contacts.isNotEmpty
-                ?
-                    ListView.builder(
-                        itemCount: contacts.length,
-                        itemBuilder: (context, index) =>
-                           Column(
-                             children: [
-                               addContactBtn(),
-                               ContactCard(
-                                contact: contacts[index],
-                          ),
-                             ],
-                           )
+        body: ListView.builder(
+            itemCount: contacts.length+1,
+            itemBuilder: (context, index) {
+              if(index==0){
+                return addContactBtn();
+              }
+                return ContactCard(
+                  contact: contacts[index-1],
+                );
 
-                ): Container(),
 
-        );
+
+            }));
   }
 
   Future<void> loadContacts() async {
@@ -105,23 +100,26 @@ class _SelectContactState extends State<SelectContact> {
       print('Error loading contacts: $e');
     }
   }
-  Widget addContactBtn(){
+
+  Widget addContactBtn() {
     return InkWell(
-      onTap: (){},
+      onTap: () {},
       child: const ListTile(
         leading: CircleAvatar(
           radius: 23,
           backgroundColor: Colors.pink,
-          child: Icon(Icons.person_add,color: Colors.white,),
-        ),
-        title: Text("New Contact",
-          style:  TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-
+          child: Icon(
+            Icons.person_add,
+            color: Colors.white,
           ),
         ),
-
+        title: Text(
+          "New Contact",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
