@@ -12,6 +12,8 @@ import 'package:heyu_front/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import 'MediaCard.dart';
+
 class IndivChatScreen extends StatefulWidget {
   const IndivChatScreen({super.key, required this.chatModel});
 
@@ -242,7 +244,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               children: [
                 Expanded(
                     //height: MediaQuery.of(context).size.height - 140,
-                    child: FutureBuilder<String>(
+                    child: /*FutureBuilder<String>(
                   future: SharedService.userId(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -261,10 +263,19 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                   userId
                               ? OwnMessageCard(messageModel: messages[index])
                               : ReplyMessageCard(
-                                  messageModel: messages[index]));
-                    }
+                                  messageModel: messages[index]),
+                      );*/
+                      ListView(
+                        children: [
+                          MediaCard(alignment: Alignment.centerRight, color: Colors.pinkAccent.withOpacity(0.6)),
+                          MediaCard(alignment: Alignment.centerLeft, color: Colors.blueAccent.withOpacity(0.6)),
+
+                        ],
+                      )
+                    /*}
                   },
-                )),
+                ),*/
+                ),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Column(
