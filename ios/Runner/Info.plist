@@ -4,6 +4,8 @@
 	<dict>
         <key>NSCameraUsageDescription</key>
         <string>your usage description here</string>
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>We need access to your photo library to allow you to share photos and videos with your friends and family through our app.</string>
         <key>NSMicrophoneUsageDescription</key>
         <string>your usage description here</string>
 		<key>CFBundleDevelopmentRegion</key>

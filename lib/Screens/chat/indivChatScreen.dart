@@ -9,6 +9,7 @@ import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
 import 'package:heyu_front/Services/message_service.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 import 'package:heyu_front/config.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class IndivChatScreen extends StatefulWidget {
@@ -34,6 +35,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   TextEditingController textEditingController = TextEditingController();
   List<MessageModel> messages = [];
   ScrollController scrollController = ScrollController();
+  ImagePicker picker = ImagePicker();
+  XFile? file;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -388,15 +392,18 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   iconCreation(
-                      Icons.insert_drive_file, Colors.blue, "Document"),
+                      Icons.insert_drive_file, Colors.blue, "Document",(){}),
                   const SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.camera_alt, Colors.pink, "Camera"),
+                  iconCreation(Icons.camera_alt, Colors.pink, "Camera",(){}),
                   const SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.insert_photo, Colors.purple, "Gallery"),
+                  iconCreation(Icons.insert_photo, Colors.purple, "Gallery",()async{
+                    file=await picker.pickImage(source: ImageSource.gallery);
+                    print(file?.name);
+                  }),
                 ],
               ),
               const SizedBox(
@@ -405,15 +412,15 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  iconCreation(Icons.headset, Colors.orange, "Audio"),
+                  iconCreation(Icons.headset, Colors.orange, "Audio",(){}),
                   const SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.location_pin, Colors.cyan, "Location"),
+                  iconCreation(Icons.location_pin, Colors.cyan, "Location",(){}),
                   const SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.person, Colors.lightGreen, "Contact"),
+                  iconCreation(Icons.person, Colors.lightGreen, "Contact",(){}),
                 ],
               ),
             ],
@@ -423,9 +430,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     );
   }
 
-  Widget iconCreation(IconData icon, Color color, String text) {
+  Widget iconCreation(IconData icon, Color color, String text,void Function() onTap) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Column(
         children: [
           CircleAvatar(
