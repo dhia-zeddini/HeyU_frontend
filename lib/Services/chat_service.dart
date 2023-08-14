@@ -24,7 +24,7 @@ class ChatService{
     );
     if(response.statusCode==200){
       var data=jsonDecode(response.body);
-      print(data);
+      //print(data);
       return chatsFromJson(data);
     }else{
       return null;

@@ -3,10 +3,12 @@ import 'package:heyu_front/Models/UserModel.dart';
 
 List<MessageModel> messagesFromJson(dynamic str) =>
     List<MessageModel>.from((str).map((x) => MessageModel.fromJson(x)));
+
 class MessageModel {
   late String messageId;
   late String sender;
   late String content;
+  late String mediaPath;
   late String receiverId;
   late String? chatId;
   late DateTime createdAt;
@@ -17,6 +19,7 @@ class MessageModel {
       {required this.messageId,
       required this.sender,
       required this.content,
+      required this.mediaPath,
       required this.receiverId,
       this.chatId,
       required this.createdAt,
@@ -27,6 +30,7 @@ class MessageModel {
     messageId = json['_id'];
     sender = json['sender']['_id'];
     content = json['content'];
+    mediaPath = json['mediaPath'];
     receiverId = json['receiverId'];
     chatId = json['chatId'];
     createdAt = DateTime.parse(json['createdAt']);
@@ -42,6 +46,7 @@ class MessageModel {
     messageId = json['_id'];
     sender = json['sender'];
     content = json['content'];
+    mediaPath = json['mediaPath'];
     receiverId = json['receiverId'];
     chatId = json['chatId'];
     createdAt = DateTime.parse(json['createdAt']);
@@ -62,6 +67,7 @@ class MessageModel {
 
     data['sender'] = sender;
     data['content'] = content;
+    data['mediaPath'] = mediaPath;
     data['receiverId'] = receiverId;
     data['chatId'] = chatId;
     data['createdAt'] = createdAt.toString();

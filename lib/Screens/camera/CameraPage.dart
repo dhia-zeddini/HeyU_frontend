@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:heyu_front/Screens/CameraScreen.dart';
+import 'package:heyu_front/Screens/camera/CameraScreen.dart';
 
 
 class CameraPage extends StatelessWidget {
@@ -7,6 +7,6 @@ class CameraPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CameraScreen();
+    return CameraScreen(onImageSend: (){},);
   }
 }

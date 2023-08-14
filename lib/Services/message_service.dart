@@ -6,7 +6,7 @@ import 'package:heyu_front/Models/MessageModel.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 import 'package:heyu_front/config.dart';
 import 'package:http/http.dart'as http;
-
+import 'package:http_parser/http_parser.dart';
 
 class MessageServive{
   static var client=http.Client();
@@ -30,7 +30,7 @@ class MessageServive{
       return null;
     }
   }
-  static Future<List<dynamic>> sendMessage(String content,String reciver,String chat)async{
+  static Future<List<dynamic>> sendMessage(String content,String reciver,String chat,String mediaPath)async{
     var userToken=await SharedService.loginDetails();
     Map<String,String> requestHeaders={
       'Content-Type':'application/json',
@@ -39,7 +39,8 @@ class MessageServive{
     Map<String, String> requestBody = {
       "content":content,
       "chatId":chat,
-      "receiverId":reciver
+      "receiverId":reciver,
+      "mediaPath":mediaPath,
     };
     var url=Uri.http(Config.apiURL,Config.chatMessages);
     var response=await client.post(
@@ -47,8 +48,8 @@ class MessageServive{
       headers: requestHeaders,
       body: jsonEncode(requestBody),
     );
-    /*print(url);
-    print(response.body);*/
+    print(url);
+    print(response.body);
     if(response.statusCode==200){
       MessageModel msg=MessageModel.fromJson(jsonDecode(response.body));
       print(msg);
@@ -59,5 +60,45 @@ class MessageServive{
       return [false];
     }
   }
+
+ /* static Future<List<dynamic>> sendMessage(String content, String receiver, String chat, String mediaPath) async {
+    var userToken = await SharedService.loginDetails();
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'token': "Bearer ${userToken!.token}"
+    };
+
+    var url = Uri.http(Config.apiURL, Config.chatMessages);
+
+    // Create a new multipart request
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll(requestHeaders);
+
+    // Add text fields to the request
+    request.fields['content'] = content;
+    request.fields['chatId'] = chat;
+    request.fields['receiverId'] = receiver;
+
+    // Add the image file as a multipart form data
+    if (mediaPath!="") {
+      var image = await http.MultipartFile.fromPath('media', mediaPath,
+          contentType: MediaType('image', 'jpeg')); // Change 'jpeg' to the actual image format
+      request.files.add(image);
+    }
+
+    // Send the request and get the response
+    var response = await http.Response.fromStream(await request.send());
+print(request.fields);
+    if (response.statusCode == 200) {
+      MessageModel msg = MessageModel.fromJson(jsonDecode(response.body));
+      print(msg);
+
+      var messageMap = msg.toJson();
+      return [true, msg, messageMap];
+    } else {
+      return [false];
+    }
+  }*/
+
 
 }

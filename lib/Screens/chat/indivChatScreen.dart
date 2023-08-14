@@ -4,6 +4,8 @@ import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Models/MessageModel.dart';
 import 'package:heyu_front/Models/UserModel.dart';
 import 'package:heyu_front/Screens/HomeScreen.dart';
+import 'package:heyu_front/Screens/camera/CameraScreen.dart';
+import 'package:heyu_front/Screens/camera/CameraViewPage.dart';
 import 'package:heyu_front/Screens/chat/OwnMessageCard.dart';
 import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
 import 'package:heyu_front/Services/message_service.dart';
@@ -86,10 +88,13 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               MessageModel.fromSocket(newMessageReceived);
           print("******new msg*******");
           print(receivedMessage);
-          setState(() {
-            messages.insert(messages.length, receivedMessage);
-            print("donne");
-          });
+          if (widget.chatModel.chatId == receivedMessage.chatId){
+            setState(() {
+              messages.insert(messages.length, receivedMessage);
+              print("donne");
+            });
+          }
+
           /*} else {
           print("not mounted");
         }*/
@@ -112,8 +117,8 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     socket.emit('stop typing', status);
   }
 
-  void sendMsg(String content, String reciver, String chat) {
-    MessageServive.sendMessage(content, reciver, chat).then((response) {
+  void sendMsg(String content, String receiver, String chat,String mediaPath) {
+    MessageServive.sendMessage(content, receiver, chat,mediaPath).then((response) {
       var emission = response[2];
       socket.emit("new message", emission);
       setState(() {
@@ -124,12 +129,19 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     });
   }
 
+  void onImageSend(String path){
+    print(" working: $path");
+    MessageServive.sendMessage("content", "64c706750e0bb48102b6ca26", "64c70a8087c37bf074cb8fa7",path);
+  }
+
   void scrollToBottom() {
+    print("aa");
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+    print("bb");
   }
 
   @override
@@ -244,7 +256,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               children: [
                 Expanded(
                     //height: MediaQuery.of(context).size.height - 140,
-                    child: /*FutureBuilder<String>(
+                    child: FutureBuilder<String>(
                   future: SharedService.userId(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -256,6 +268,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                       String userId = snapshot.data ?? "";
                       return ListView.builder(
                           shrinkWrap: true,
+                          sc
                           controller: scrollController,
                           itemCount: messages.length,
                           itemBuilder: (context, index) => messages[index]
@@ -264,17 +277,11 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                               ? OwnMessageCard(messageModel: messages[index])
                               : ReplyMessageCard(
                                   messageModel: messages[index]),
-                      );*/
-                      ListView(
-                        children: [
-                          MediaCard(alignment: Alignment.centerRight, color: Colors.pinkAccent.withOpacity(0.6)),
-                          MediaCard(alignment: Alignment.centerLeft, color: Colors.blueAccent.withOpacity(0.6)),
+                      );
 
-                        ],
-                      )
-                    /*}
+                    }
                   },
-                ),*/
+                ),
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
@@ -334,7 +341,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                       ),
                                       IconButton(
                                         icon: const Icon(Icons.camera_alt),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraScreen(onImageSend: onImageSend,)));
+                                        },
                                       ),
                                     ],
                                   ),
@@ -357,7 +366,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                 onPressed: () async {
                                   String receiver = await receiverId();
                                   sendMsg(textEditingController.text, receiver,
-                                      widget.chatModel.chatId);
+                                      widget.chatModel.chatId,"");
                                 },
                               ),
                             ),
@@ -407,12 +416,20 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                   const SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.camera_alt, Colors.pink, "Camera",(){}),
+                  iconCreation(Icons.camera_alt, Colors.pink, "Camera",(){
+                    Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraScreen(onImageSend: onImageSend)));
+                  }),
                   const SizedBox(
                     width: 40,
                   ),
                   iconCreation(Icons.insert_photo, Colors.purple, "Gallery",()async{
                     file=await picker.pickImage(source: ImageSource.gallery);
+                    if(file!=null){
+                    Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraViewPage(
+                        path: file!.path,
+                      onImageSend: onImageSend,
+                    ),),);
+                    }
                     print(file?.name);
                   }),
                 ],

@@ -9,7 +9,7 @@ import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
 import 'package:heyu_front/Screens/chat/chatsScreen.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 
-import 'Screens/CameraScreen.dart';
+import 'Screens/camera/CameraScreen.dart';
 Widget defaultHome=const LandingPage();
 
 Future<void> main() async{
