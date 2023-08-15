@@ -26,8 +26,8 @@ class IndivChatScreen extends StatefulWidget {
   @override
   State<IndivChatScreen> createState() => _IndivChatScreenState();
 }
-
-class _IndivChatScreenState extends State<IndivChatScreen> with WidgetsBindingObserver{
+//with WidgetsBindingObserver
+class _IndivChatScreenState extends State<IndivChatScreen> {
   String avatar =
       "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
   final String url = "http://${Config.apiURL}";
@@ -50,7 +50,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> with WidgetsBindingOb
     super.initState();
     connect();
     loadMessages();
-    WidgetsBinding.instance?.addObserver(this);
+    //WidgetsBinding.instance?.addObserver(this);
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         setState(() {
@@ -59,7 +59,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> with WidgetsBindingOb
       }
     });
   }
-  @override
+/*  @override
   void didChangeMetrics() {
     if (WidgetsBinding.instance?.window.viewInsets.bottom == 0) {
       // Keyboard closed, scroll to the end after a small delay
@@ -67,7 +67,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> with WidgetsBindingOb
         scrollToBottom();
       });
     }
-  }
+  }*/
 
   void connect() async {
     String connectedId = await SharedService.userId();
@@ -143,15 +143,18 @@ class _IndivChatScreenState extends State<IndivChatScreen> with WidgetsBindingOb
 
   void onImageSend(String path){
     print(" working: $path");
-    MessageServive.sendMessage("content", "64c706750e0bb48102b6ca26", "64c70a8087c37bf074cb8fa7",path);
+   // MessageServive.sendMessage("content", "64c706750e0bb48102b6ca26", "64c70a8087c37bf074cb8fa7",path);
+    MessageServive.sendImage(path);
   }
 
   void scrollToBottom() {
+    Timer(const Duration(milliseconds: 100), () {
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+    });
   }
 
   @override

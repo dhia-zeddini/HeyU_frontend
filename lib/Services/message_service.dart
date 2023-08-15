@@ -61,6 +61,21 @@ class MessageServive{
     }
   }
 
+  static Future<bool> sendImage(String mediaPath)async{
+    var url = Uri.http(Config.apiURL, Config.sendImg);
+   var request=http.MultipartRequest("POST", url);
+   request.files.add(await http.MultipartFile.fromPath('img', mediaPath));
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+
+    };
+    request.headers.addAll(requestHeaders);
+    http.StreamedResponse response= await request.send();
+    print(url);
+    print(response);
+    return true;
+  }
+
  /* static Future<List<dynamic>> sendMessage(String content, String receiver, String chat, String mediaPath) async {
     var userToken = await SharedService.loginDetails();
     Map<String, String> requestHeaders = {

@@ -9,6 +9,8 @@ class Config{
   static const String wallpapersUrl="/images/wallpapers/";
   static const String chatMessages="/messages/";
   static const String getUserContacts="/contact/";
+  static const String sendImg="/messages/addImg";
+
 
 
 }
