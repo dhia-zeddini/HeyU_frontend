@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
@@ -25,7 +27,7 @@ class IndivChatScreen extends StatefulWidget {
   State<IndivChatScreen> createState() => _IndivChatScreenState();
 }
 
-class _IndivChatScreenState extends State<IndivChatScreen> {
+class _IndivChatScreenState extends State<IndivChatScreen> with WidgetsBindingObserver{
   String avatar =
       "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
   final String url = "http://${Config.apiURL}";
@@ -48,6 +50,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     super.initState();
     connect();
     loadMessages();
+    WidgetsBinding.instance?.addObserver(this);
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         setState(() {
@@ -55,6 +58,15 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         });
       }
     });
+  }
+  @override
+  void didChangeMetrics() {
+    if (WidgetsBinding.instance?.window.viewInsets.bottom == 0) {
+      // Keyboard closed, scroll to the end after a small delay
+      Timer(const Duration(milliseconds: 100), () {
+        scrollToBottom();
+      });
+    }
   }
 
   void connect() async {
@@ -135,13 +147,11 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   }
 
   void scrollToBottom() {
-    print("aa");
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-    print("bb");
   }
 
   @override
@@ -268,7 +278,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                       String userId = snapshot.data ?? "";
                       return ListView.builder(
                           shrinkWrap: true,
-                          sc
+
                           controller: scrollController,
                           itemCount: messages.length,
                           itemBuilder: (context, index) => messages[index]
