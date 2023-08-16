@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:heyu_front/config.dart';
 
 class MediaCard extends StatelessWidget {
   const MediaCard({super.key,required this.alignment ,required this.color,required this.path});
@@ -26,7 +27,13 @@ class MediaCard extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15)
             ),
-            child: Image.file(File(path)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                "http://${Config.apiURL}${Config.sharedMedia}$path",
+                  fit: BoxFit.fill,
+              ),
+            ),
           ),
         ),
       ),

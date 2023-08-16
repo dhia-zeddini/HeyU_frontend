@@ -30,7 +30,7 @@ class MessageServive{
       return null;
     }
   }
-  static Future<List<dynamic>> sendMessage(String content,String reciver,String chat,String mediaPath)async{
+  /*static Future<List<dynamic>> sendMessage(String content,String reciver,String chat,String mediaPath)async{
     var userToken=await SharedService.loginDetails();
     Map<String,String> requestHeaders={
       'Content-Type':'application/json',
@@ -59,9 +59,9 @@ class MessageServive{
     }else{
       return [false];
     }
-  }
+  }*/
 
-  static Future<bool> sendImage(String mediaPath)async{
+  static Future<bool> sendImage(String content, String receiver, String chat,String mediaPath)async{
     var url = Uri.http(Config.apiURL, Config.sendImg);
    var request=http.MultipartRequest("POST", url);
    request.files.add(await http.MultipartFile.fromPath('img', mediaPath));
@@ -70,13 +70,16 @@ class MessageServive{
 
     };
     request.headers.addAll(requestHeaders);
+    request.fields['content'] = content;
+    request.fields['chatId'] = chat;
+    request.fields['receiverId'] = receiver;
     http.StreamedResponse response= await request.send();
     print(url);
     print(response);
     return true;
   }
 
- /* static Future<List<dynamic>> sendMessage(String content, String receiver, String chat, String mediaPath) async {
+  static Future<List<dynamic>> sendMessage(String content, String receiver, String chat, String mediaPath) async {
     var userToken = await SharedService.loginDetails();
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -96,14 +99,14 @@ class MessageServive{
 
     // Add the image file as a multipart form data
     if (mediaPath!="") {
-      var image = await http.MultipartFile.fromPath('media', mediaPath,
+      var image = await http.MultipartFile.fromPath('img', mediaPath,
           contentType: MediaType('image', 'jpeg')); // Change 'jpeg' to the actual image format
       request.files.add(image);
     }
 
     // Send the request and get the response
     var response = await http.Response.fromStream(await request.send());
-print(request.fields);
+     print(request.fields);
     if (response.statusCode == 200) {
       MessageModel msg = MessageModel.fromJson(jsonDecode(response.body));
       print(msg);
@@ -113,7 +116,7 @@ print(request.fields);
     } else {
       return [false];
     }
-  }*/
+  }
 
 
 }

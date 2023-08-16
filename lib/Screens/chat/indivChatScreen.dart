@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:emoji_selector/emoji_selector.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Models/MessageModel.dart';
@@ -8,6 +9,7 @@ import 'package:heyu_front/Models/UserModel.dart';
 import 'package:heyu_front/Screens/HomeScreen.dart';
 import 'package:heyu_front/Screens/camera/CameraScreen.dart';
 import 'package:heyu_front/Screens/camera/CameraViewPage.dart';
+import 'package:heyu_front/Screens/chat/MediaCard.dart';
 import 'package:heyu_front/Screens/chat/OwnMessageCard.dart';
 import 'package:heyu_front/Screens/chat/replyMessageCard.dart';
 import 'package:heyu_front/Services/message_service.dart';
@@ -15,8 +17,6 @@ import 'package:heyu_front/Services/shared_service.dart';
 import 'package:heyu_front/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
-import 'MediaCard.dart';
 
 class IndivChatScreen extends StatefulWidget {
   const IndivChatScreen({super.key, required this.chatModel});
@@ -43,6 +43,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   ScrollController scrollController = ScrollController();
   ImagePicker picker = ImagePicker();
   XFile? file;
+  int popTime=0;
 
   @override
   void initState() {
@@ -56,6 +57,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         setState(() {
           showEmojis = false;
         });
+        scrollToBottom();
       }
     });
   }
@@ -82,6 +84,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
           setState(() {
             typing = true;
           });
+          scrollToBottom();
           print("typing");
           /*}else{
             print("not typing");
@@ -91,6 +94,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
           setState(() {
             typing = false;
           });
+          scrollToBottom();
         });
         socket.on('new message', (newMessageReceived) {
           //if (mounted) {
@@ -105,6 +109,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               messages.insert(messages.length, receivedMessage);
               print("donne");
             });
+            scrollToBottom();
           }
 
           /*} else {
@@ -129,7 +134,9 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     socket.emit('stop typing', status);
   }
 
-  void sendMsg(String content, String receiver, String chat,String mediaPath) {
+  void sendMsg(String content,String mediaPath) async{
+    String receiver = await receiverId();
+    String chat=widget.chatModel.chatId;
     MessageServive.sendMessage(content, receiver, chat,mediaPath).then((response) {
       var emission = response[2];
       socket.emit("new message", emission);
@@ -137,22 +144,29 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         textEditingController.clear();
         messages.insert(messages.length, response[1]);
       });
+      if(mediaPath.isNotEmpty){
+        for(int i=0;i<popTime;i++){
+          Navigator.pop(context);
+        }
+        setState(() {
+          popTime=0;
+        });
+      }
       scrollToBottom();
     });
   }
 
-  void onImageSend(String path){
+  void onImageSend(String path,String content)async{
     print(" working: $path");
-   // MessageServive.sendMessage("content", "64c706750e0bb48102b6ca26", "64c70a8087c37bf074cb8fa7",path);
-    MessageServive.sendImage(path);
+    String receiver = await receiverId();
+   MessageServive.sendMessage(content, receiver, widget.chatModel.chatId,path);
+    //MessageServive.sendImage("content", "64c706750e0bb48102b6ca26", "64c70a8087c37bf074cb8fa7",path);
   }
 
   void scrollToBottom() {
     Timer(const Duration(milliseconds: 100), () {
-    scrollController.animateTo(
-      scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+    scrollController.jumpTo(
+      scrollController.position.maxScrollExtent
     );
     });
   }
@@ -173,10 +187,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     return Stack(
       children: [
         Image.network(
-          "http://" +
-              Config.apiURL +
-              Config.wallpapersUrl +
-              widget.chatModel.wallpaper,
+          "http://${Config.apiURL}${Config.wallpapersUrl}${widget.chatModel.wallpaper}",
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           fit: BoxFit.cover,
@@ -192,10 +203,10 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               children: [
                 InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomeScreen()));
                     },
                     child: const Icon(
-                      Icons.arrow_back,
+                      Icons.arrow_back_ios,
                       size: 24,
                     )),
                 CircleAvatar(
@@ -262,7 +273,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               )
             ],
           ),
-          body: Container(
+          body: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Column(
@@ -281,15 +292,12 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                       String userId = snapshot.data ?? "";
                       return ListView.builder(
                           shrinkWrap: true,
-
+                          dragStartBehavior: DragStartBehavior.down,
                           controller: scrollController,
                           itemCount: messages.length,
-                          itemBuilder: (context, index) => messages[index]
-                                      .sender ==
-                                  userId
-                              ? OwnMessageCard(messageModel: messages[index])
-                              : ReplyMessageCard(
-                                  messageModel: messages[index]),
+                          itemBuilder: (context, index) => messages[index].sender ==userId
+                              ? messages[index].mediaPath.isEmpty?OwnMessageCard(messageModel: messages[index]):MediaCard(alignment: Alignment.centerRight, color: Colors.pinkAccent, path: messages[index].mediaPath)
+                              : messages[index].mediaPath.isEmpty?ReplyMessageCard(messageModel: messages[index]):MediaCard(alignment: Alignment.centerLeft, color: Colors.blueAccent, path: messages[index].mediaPath),
                       );
 
                     }
@@ -337,6 +345,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                       setState(() {
                                         showEmojis = !showEmojis;
                                       });
+                                      scrollToBottom();
                                     },
                                   ),
                                   suffixIcon: Row(
@@ -355,7 +364,10 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                       IconButton(
                                         icon: const Icon(Icons.camera_alt),
                                         onPressed: () {
-                                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraScreen(onImageSend: onImageSend,)));
+                                          setState(() {
+                                            popTime=2;
+                                          });
+                                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraScreen(onImageSend: sendMsg,)));
                                         },
                                       ),
                                     ],
@@ -377,9 +389,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                                   color: Colors.white,
                                 ),
                                 onPressed: () async {
-                                  String receiver = await receiverId();
-                                  sendMsg(textEditingController.text, receiver,
-                                      widget.chatModel.chatId,"");
+                                  sendMsg(textEditingController.text,"");
                                 },
                               ),
                             ),
@@ -407,12 +417,13 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         setState(() {
           textEditingController.text = textEditingController.text + emoji.char;
         });
+        scrollToBottom();
       },
     );
   }
 
   Widget bottomSheet() {
-    return Container(
+    return SizedBox(
       height: 278,
       width: MediaQuery.of(context).size.width,
       child: Card(
@@ -430,17 +441,23 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                     width: 40,
                   ),
                   iconCreation(Icons.camera_alt, Colors.pink, "Camera",(){
-                    Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraScreen(onImageSend: onImageSend)));
+                    setState(() {
+                      popTime=3;
+                    });
+                    Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraScreen(onImageSend: sendMsg)));
                   }),
                   const SizedBox(
                     width: 40,
                   ),
                   iconCreation(Icons.insert_photo, Colors.purple, "Gallery",()async{
                     file=await picker.pickImage(source: ImageSource.gallery);
-                    if(file!=null){
+                    if(file!=null&& mounted){
+                      setState(() {
+                        popTime=2;
+                      });
                     Navigator.push(context, MaterialPageRoute(builder: (builder)=>CameraViewPage(
                         path: file!.path,
-                      onImageSend: onImageSend,
+                      onImageSend: sendMsg,
                     ),),);
                     }
                     print(file?.name);
@@ -507,9 +524,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
         setState(() {
           messages = chatMessages;
         });
-        scrollController.animateTo(scrollController.position.maxScrollExtent,
-            duration: const Duration(microseconds: 300),
-            curve: Curves.easeInOut);
+        scrollToBottom();
       }
     } catch (e) {
       print('Error loading chats: $e');

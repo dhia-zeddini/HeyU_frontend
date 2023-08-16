@@ -9,9 +9,8 @@ import 'package:path_provider/path_provider.dart';
 late List<CameraDescription> cameras;
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key,required this.onImageSend});
+  const CameraScreen({super.key, required this.onImageSend});
   final Function onImageSend;
-
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -87,7 +86,7 @@ class _CameraScreenState extends State<CameraScreen> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       IconButton(
-                        onPressed: (){},
+                        onPressed: () {},
                         icon: /*Icon(
                           mode == FlashMode.auto
                               ? Icons.flash_auto
@@ -97,17 +96,15 @@ class _CameraScreenState extends State<CameraScreen> {
                           color: Colors.white,
                           size: 28,
                         ),*/
-                        Icon(
-                          flash
-                              ? Icons.flash_on
-                              : Icons.flash_off,
+                            Icon(
+                          flash ? Icons.flash_on : Icons.flash_off,
                           color: Colors.white,
                           size: 28,
                         ),
                       ),
                       GestureDetector(
                         onLongPress: () async {
-                         /* if (!isRecording) {
+                          /* if (!isRecording) {
                             await _controller.startVideoRecording();
                             setState(() {
                               isRecording = true;
@@ -188,14 +185,16 @@ class _CameraScreenState extends State<CameraScreen> {
     //final path= ((await getTemporaryDirectory()).path,"${DateTime.now()}.png");
     XFile picture = await _controller.takePicture();
     await picture.saveTo(imagePath);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (builder) => CameraViewPage(
-                path: imagePath,
-            onImageSend: widget.onImageSend,
-              )),
-    );
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (builder) => CameraViewPage(
+                  path: imagePath,
+                  onImageSend: widget.onImageSend,
+                )),
+      );
+    }
   }
 
   void stopVideRecording() async {
@@ -207,10 +206,12 @@ class _CameraScreenState extends State<CameraScreen> {
     setState(() {
       isRecording = false;
     });
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (builder) => VideoViewPage(path: videoPath)));
+    if (mounted) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (builder) => VideoViewPage(path: videoPath)));
+    }
   }
 
   Future<void> _startVideoRecording() async {
@@ -239,11 +240,13 @@ class _CameraScreenState extends State<CameraScreen> {
       final String fileName = '${DateTime.now()}.mp4';
       final String videoPath = '${appDirectory.path}/$fileName';
       await videoFile.saveTo(videoPath);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => VideoViewPage(path: videoPath)),
-      );
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => VideoViewPage(path: videoPath)),
+        );
+      }
     } catch (e) {
       print("Error stopping video recording: $e");
     }

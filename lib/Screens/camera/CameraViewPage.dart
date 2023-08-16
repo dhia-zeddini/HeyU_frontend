@@ -9,6 +9,8 @@ class CameraViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -52,6 +54,7 @@ class CameraViewPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                 child: TextFormField(
+                  controller: textEditingController,
                   maxLines: 6,
                   minLines: 1,
                   style: const TextStyle(
@@ -73,7 +76,10 @@ class CameraViewPage extends StatelessWidget {
 
                     suffixIcon: InkWell(
                       onTap: (){
-                        onImageSend(path);
+                        String content;
+                        textEditingController.text.isNotEmpty?content=textEditingController.text:content=" ";
+                        onImageSend(content,path);
+                        print(textEditingController.text);
                       },
                       child: const CircleAvatar(
                         radius: 27,

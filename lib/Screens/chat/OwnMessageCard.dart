@@ -18,6 +18,9 @@ class OwnMessageCard extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: Colors.pinkAccent.withOpacity(0.4),
           margin: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+/*
+          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height - 245,right: 5),
+*/
           child: Stack(
             children: [
               Padding(
