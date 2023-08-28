@@ -34,12 +34,12 @@ class CameraViewPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: [
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height - 150,
               child: Image.file(
@@ -79,7 +79,7 @@ class CameraViewPage extends StatelessWidget {
                         String content;
                         textEditingController.text.isNotEmpty?content=textEditingController.text:content=" ";
                         onImageSend(content,path);
-                        print(textEditingController.text);
+                        //print(textEditingController.text);
                       },
                       child: const CircleAvatar(
                         radius: 27,

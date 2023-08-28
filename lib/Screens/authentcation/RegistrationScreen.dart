@@ -1,11 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/Register_request_model.dart';
 import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
-
-import '../../Models/Register_response_model.dart';
 import '../../Services/auth_service.dart';
 import '../../config.dart';
 
@@ -20,12 +21,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool isAPIcallProcess = false;
   bool hidePwd = true;
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
-  String? phoneNumber;
-  String? password;
-  String? firstname;
-  String? lastname;
-  String? username;
-  String? email;
+  late String phoneNumber;
+  late String password;
+  late String firstname;
+  late String lastname;
+  late String username;
+  late String email;
+  String? path;
+  ImagePicker picker = ImagePicker();
+  XFile? file;
+  @override
+  void initState() {
+    // TODO: implement initState
+    path = null;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +97,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           const Padding(
             padding: EdgeInsets.only(
               left: 20,
-              bottom: 30,
+              bottom: 20,
               top: 30,
             ),
             child: Text(
@@ -96,6 +106,40 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 fontWeight: FontWeight.bold,
                 fontSize: 25,
                 color: Colors.pinkAccent,
+              ),
+            ),
+          ),
+          Center(
+            child: InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (builder) => bottomSheet(),
+                  backgroundColor: Colors.transparent,
+                );
+              },
+              child: CircleAvatar(
+                radius: 35,
+                backgroundColor: Colors.pinkAccent[200],
+                child: Stack(
+                  children: [
+                    if (path != null) // Display the image if path is not null
+                      ClipOval(
+                        child: Image.file(
+                          File(path!),
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    if (path ==
+                        null) // Display the add photo icon if path is null
+                      const Icon(
+                        Icons.add_a_photo_outlined,
+                        color: Colors.white,
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -183,7 +227,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               "Email",
               (onValidateVal) {
                 if (onValidateVal.isEmpty) {
-                  return "Email can\'t be empty";
+                  return "Email can't be empty";
                 }
                 return null;
               },
@@ -207,7 +251,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               "Phone Number",
               (onValidateVal) {
                 if (onValidateVal.isEmpty) {
-                  return "Phone number can\'t be empty";
+                  return "Phone number can't be empty";
                 }
                 return null;
               },
@@ -272,14 +316,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     isAPIcallProcess = true;
                   });
                   RegisterRequestModel model = RegisterRequestModel(
-                      firstName: firstname!,
-                      lastName: lastname!,
-                      userName: username!,
-                      email: email!,
-                      phoneNumber: phoneNumber!,
-                      password: password!,
-                      about: "about",
-                      avatar: "avatar");
+                    firstName: firstname,
+                    lastName: lastname,
+                    userName: username,
+                    email: email,
+                    phoneNumber: phoneNumber,
+                    password: password,
+                    about: "about",
+                  );
                   AuthService.register(model).then((response) {
                     setState(() {
                       isAPIcallProcess = false;
@@ -363,7 +407,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   bool validateAndSave() {
     final form = globalKey.currentState;
-    if (form!.validate()) {
+    if (form!.validate() && path != null) {
       form.save();
       return true;
     } else {
@@ -374,5 +418,89 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool PwdMatch(String input) {
     final regExp = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
     return regExp.hasMatch(input);
+  }
+
+  Widget bottomSheet() {
+    return SizedBox(
+      height: 200,
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        margin: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  iconCreation(Icons.no_photography, Colors.blue, "None", () {
+                    if (file != null && mounted) {
+                      setState(() {
+                        path = null;
+                      });
+                    }
+                  }),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  iconCreation(Icons.camera_alt, Colors.pink, "Camera", () {
+                    /* Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (builder) =>
+                                CameraScreen(onImageSend: sendMsg)));*/
+                  }),
+                  const SizedBox(
+                    width: 40,
+                  ),
+                  iconCreation(Icons.insert_photo, Colors.purple, "Gallery",
+                      () async {
+                    file = await picker.pickImage(source: ImageSource.gallery);
+                    if (file != null && mounted) {
+                      setState(() {
+                        path = file!.path;
+                      });
+                      print(file?.path);
+                    }
+                  }),
+                ],
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget iconCreation(
+      IconData icon, Color color, String text, void Function() onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          CircleAvatar(
+            backgroundColor: color,
+            radius: 30,
+            child: Icon(
+              icon,
+              size: 29,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

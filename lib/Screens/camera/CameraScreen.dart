@@ -24,6 +24,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   void initState() {
     super.initState();
+    print("initialize cam");
     initializeCamera();
   }
 
@@ -34,6 +35,9 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> initializeCamera() async {
+    if (!mounted){
+      return;
+    }
     _controller = CameraController(
       cameras[0],
       ResolutionPreset.high,

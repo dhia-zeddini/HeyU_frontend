@@ -40,7 +40,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   late bool typing = false;
   TextEditingController textEditingController = TextEditingController();
   List<MessageModel> messages = [];
-  ScrollController scrollController = ScrollController();
+  late ScrollController scrollController ;
   ImagePicker picker = ImagePicker();
   XFile? file;
   int popTime=0;
@@ -49,6 +49,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    scrollController = ScrollController();
     connect();
     loadMessages();
     //WidgetsBinding.instance?.addObserver(this);
@@ -164,11 +165,13 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   }
 
   void scrollToBottom() {
-    Timer(const Duration(milliseconds: 100), () {
+    if(scrollController.hasClients) {
+      Timer(const Duration(milliseconds: 100), () {
     scrollController.jumpTo(
       scrollController.position.maxScrollExtent
     );
     });
+    }
   }
 
   @override
@@ -540,4 +543,10 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     }
     throw Exception("Receiver ID not found.");
   }
+  bool get _isBottom {
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
 }

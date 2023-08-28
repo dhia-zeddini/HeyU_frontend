@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:heyu_front/Screens/auth/LoginPage.dart';
 import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
 
+import '../../Services/shared_service.dart';
+
 class LandingPage extends StatefulWidget {
   const LandingPage({Key? key}) : super(key: key);
 
   @override
   State<LandingPage> createState() => _LandingPageState();
+
 }
 
 class _LandingPageState extends State<LandingPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
