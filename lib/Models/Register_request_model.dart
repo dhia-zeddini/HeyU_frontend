@@ -26,7 +26,7 @@ class RegisterRequestModel {
     phoneNumber = json['phoneNumber'];
     password = json['password'];
     about = json['about'];
-    ;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -37,7 +37,7 @@ class RegisterRequestModel {
     data['email'] = email;
     data['phoneNumber'] = phoneNumber;
     data['password'] = password;
-    data['about'] = about;;
+    data['about'] = about;
     return data;
   }
 }

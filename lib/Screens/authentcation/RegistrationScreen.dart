@@ -27,13 +27,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late String lastname;
   late String username;
   late String email;
-  String? path;
+  late String path;
   ImagePicker picker = ImagePicker();
   XFile? file;
   @override
   void initState() {
     // TODO: implement initState
-    path = null;
+    path = "";
     super.initState();
   }
 
@@ -123,16 +123,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 backgroundColor: Colors.pinkAccent[200],
                 child: Stack(
                   children: [
-                    if (path != null) // Display the image if path is not null
+                    if (file != null) // Display the image if path is not null
                       ClipOval(
                         child: Image.file(
-                          File(path!),
+                          File(path),
                           width: 70,
                           height: 70,
                           fit: BoxFit.cover,
                         ),
                       ),
-                    if (path ==
+                    if (file ==
                         null) // Display the add photo icon if path is null
                       const Icon(
                         Icons.add_a_photo_outlined,
@@ -324,7 +324,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     password: password,
                     about: "about",
                   );
-                  AuthService.register(model).then((response) {
+                  AuthService.register(model,path).then((response) {
                     setState(() {
                       isAPIcallProcess = false;
                     });
@@ -407,7 +407,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   bool validateAndSave() {
     final form = globalKey.currentState;
-    if (form!.validate() && path != null) {
+    if (form!.validate() && path != "") {
       form.save();
       return true;
     } else {
@@ -436,19 +436,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   iconCreation(Icons.no_photography, Colors.blue, "None", () {
                     if (file != null && mounted) {
                       setState(() {
-                        path = null;
+                        path = "";
                       });
                     }
                   }),
                   const SizedBox(
                     width: 40,
                   ),
-                  iconCreation(Icons.camera_alt, Colors.pink, "Camera", () {
-                    /* Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) =>
-                                CameraScreen(onImageSend: sendMsg)));*/
+                  iconCreation(Icons.camera_alt, Colors.pink, "Camera", () async{
+                    file = await picker.pickImage(source: ImageSource.camera);
+                    if (file != null && mounted) {
+                      setState(() {
+                        path = file!.path;
+                      });
+                    }
                   }),
                   const SizedBox(
                     width: 40,
@@ -460,7 +461,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       setState(() {
                         path = file!.path;
                       });
-                      print(file?.path);
                     }
                   }),
                 ],
