@@ -18,6 +18,8 @@ import 'package:heyu_front/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import 'CallPage.dart';
+
 class IndivChatScreen extends StatefulWidget {
   const IndivChatScreen({super.key, required this.chatModel});
 
@@ -243,7 +245,11 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
             ),
             actions: [
               IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+              IconButton(onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> CallPage(chatModel:widget.chatModel,)));
+              },
+                  icon: const Icon(Icons.call),
+              ),
               PopupMenuButton<String>(
                 itemBuilder: (BuildContext context) {
                   return [

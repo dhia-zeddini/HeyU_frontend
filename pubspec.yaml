@@ -45,6 +45,8 @@ dependencies:
   jwt_decoder: ^2.0.1
   image_picker: ^0.8.4+2
   camera: ^0.10.5+2
+  zego_uikit_prebuilt_call: ^3.13.5
+  zego_uikit_signaling_plugin: ^2.4.0
   path_provider: ^2.0.15
   path:
 
