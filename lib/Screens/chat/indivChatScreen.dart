@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Models/MessageModel.dart';
 import 'package:heyu_front/Models/UserModel.dart';
@@ -17,13 +18,14 @@ import 'package:heyu_front/Services/shared_service.dart';
 import 'package:heyu_front/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'CallPage.dart';
 
 class IndivChatScreen extends StatefulWidget {
-  const IndivChatScreen({super.key, required this.chatModel});
+  const IndivChatScreen({super.key, required this.chatModel,required this.title});
 
   final ChatModel chatModel;
+  final String title;
 
   @override
   State<IndivChatScreen> createState() => _IndivChatScreenState();
@@ -51,6 +53,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     scrollController = ScrollController();
     connect();
     loadMessages();
@@ -214,10 +217,14 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                       Icons.arrow_back_ios,
                       size: 24,
                     )),
-                CircleAvatar(
+                /*CircleAvatar(
                   radius: 20,
                   backgroundImage: NetworkImage(avatar),
-                )
+                ),*/
+                sendCallButton(
+                  isVideoCall: false,
+                  onCallFinished: onSendCallInvitationFinished,
+                ),
               ],
             ),
             title: InkWell(
@@ -229,7 +236,7 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.chatModel.users[1].userName,
+                      widget.title,
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -244,12 +251,12 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
               ),
             ),
             actions: [
-              IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
-              IconButton(onPressed: () {
+              //IconButton(onPressed: () {}, icon: const Icon(Icons.video_call)),
+              /*IconButton(onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=> CallPage(chatModel:widget.chatModel,)));
               },
                   icon: const Icon(Icons.call),
-              ),
+              ),*/
               PopupMenuButton<String>(
                 itemBuilder: (BuildContext context) {
                   return [
@@ -549,10 +556,86 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     }
     throw Exception("Receiver ID not found.");
   }
+
   bool get _isBottom {
     final maxScroll = scrollController.position.maxScrollExtent;
     final currentScroll = scrollController.offset;
     return currentScroll >= (maxScroll * 0.9);
   }
+/*************************************/
+  void onSendCallInvitationFinished(
+      String code,
+      String message,
+      List<String> errorInvitees,
+      ) {
+    /*if (errorInvitees.isNotEmpty) {
+      String userIDs = "";
+      for (int index = 0; index < errorInvitees.length; index++) {
+        if (index >= 5) {
+          userIDs += '... ';
+          break;
+        }
 
+        var userID = errorInvitees.elementAt(index);
+        userIDs += userID + ' ';
+      }
+      if (userIDs.isNotEmpty) {
+        userIDs = userIDs.substring(0, userIDs.length - 1);
+      }
+
+      var message = 'User doesn\'t exist or is offline: $userIDs';
+      if (code.isNotEmpty) {
+        message += ', code: $code, message:$message';
+      }
+      showToast(
+        message,
+        position: StyledToastPosition.top,
+        context: context,
+      );
+    } else if (code.isNotEmpty) {
+      showToast(
+        'code: $code, message:$message',
+        position: StyledToastPosition.top,
+        context: context,
+      );
+    }*/
+    showToast(
+        'code: ',
+        position: StyledToastPosition.top,
+        context: context,);
+  }
+
+  Widget sendCallButton({
+    required bool isVideoCall,
+    void Function(String code, String message, List<String>)? onCallFinished,
+  })  {
+    var receiver="64ce2fcd7c654d97696e1d8b";
+    return ZegoSendCallInvitationButton(
+      isVideoCall: isVideoCall,
+      invitees: [ZegoUIKitUser(id: receiver, name: 'user_$receiver')],
+      resourceID: "zego_data",
+      iconSize: const Size(20, 30),
+      buttonSize: const Size(30, 30),
+      onPressed: onCallFinished,
+    );
+  }
+
+
+  List<ZegoUIKitUser> getInvitesFromTextCtrl(String textCtrlText) {
+    List<ZegoUIKitUser> invitees = [];
+
+    var inviteeIDs = textCtrlText.trim().replaceAll('，', '');
+    inviteeIDs.split(",").forEach((inviteeUserID) {
+      if (inviteeUserID.isEmpty) {
+        return;
+      }
+
+      invitees.add(ZegoUIKitUser(
+        id: inviteeUserID,
+        name: 'user_$inviteeUserID',
+      ));
+    });
+
+    return invitees;
+  }
 }

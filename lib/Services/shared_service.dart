@@ -7,8 +7,15 @@ import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/Login_response_model.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+
+import '../Screens/chat/customAvatar.dart';
+import '../config.dart';
+
 
 class SharedService {
+  static ZegoUIKitPrebuiltCallController? callController;
   static Future<bool> isLoggedIn() async {
     return await APICacheManager().isAPICacheKeyExist("login_details");
   }
@@ -19,6 +26,7 @@ class SharedService {
       /*print(loginResponseJson(cacheData.syncData).token);*/
       return loginResponseJson(cacheData.syncData);
     }
+    return null;
   }
 
   static Future<void> setLogindetails(LoginResponseModel model) async {
@@ -29,6 +37,7 @@ class SharedService {
 
   static Future<void> logout(BuildContext context) async{
     await APICacheManager().deleteCache("login_details");
+    onUserLogout();
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 
@@ -54,10 +63,59 @@ class SharedService {
   }
   static Future<String> userId() async {
     Map<String, dynamic> decodedToken = await SharedService.decodedToken();
-    return decodedToken['_id'];
+    return decodedToken['_id'].toString();
   }
   static Future<bool> messageSenderTest(String sender)async{
     String userId=await SharedService.userId();
     return sender==userId;
   }
+  static void onUserLogin()async {
+    callController ??= ZegoUIKitPrebuiltCallController();
+    var user= await userId();
+    /// 4/5. initialized ZegoUIKitPrebuiltCallInvitationService when account is logged in or re-logged in
+    ZegoUIKitPrebuiltCallInvitationService().init(
+      appID: Config.zegoAppId /*input your AppID*/,
+      appSign: Config.zegoAppSignIn /*input your AppSign*/,
+      userID: user,
+      userName: user,
+      notifyWhenAppRunningInBackgroundOrQuit: true,
+      androidNotificationConfig: ZegoAndroidNotificationConfig(
+        channelID: "ZegoUIKit",
+        channelName: "Call Notifications",
+        sound: "notification",
+        callIDVisibility: true,
+      ),
+      iOSNotificationConfig: ZegoIOSNotificationConfig(
+        isSandboxEnvironment: true,
+        systemCallingIconName: 'CallKitIcon',
+      ),
+      plugins: [ZegoUIKitSignalingPlugin()],
+      controller: callController,
+      requireConfig: (ZegoCallInvitationData data) {
+        final config = (data.invitees.length > 1)
+            ? ZegoCallType.videoCall == data.type
+            ? ZegoUIKitPrebuiltCallConfig.groupVideoCall()
+            : ZegoUIKitPrebuiltCallConfig.groupVoiceCall()
+            : ZegoCallType.videoCall == data.type
+            ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
+            : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
+
+        config.avatarBuilder = customAvatarBuilder;
+
+        /// support minimizing, show minimizing button
+        config.topMenuBarConfig.isVisible = true;
+        config.topMenuBarConfig.buttons
+            .insert(1, ZegoMenuBarButtonName.minimizingButton);
+
+        return config;
+      },
+    );
+  }
+  static void onUserLogout() {
+    callController = null;
+
+    /// 5/5. de-initialization ZegoUIKitPrebuiltCallInvitationService when account is logged out
+    ZegoUIKitPrebuiltCallInvitationService().uninit();
+  }
+
 }

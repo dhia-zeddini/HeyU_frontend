@@ -258,6 +258,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               (onSavedVal) {
                 phoneNumber = onSavedVal;
               },
+              isNumeric: true,
               showPrefixIcon: true,
               prefixIcon: const Icon(Icons.call),
               borderFocusColor: Colors.pink,

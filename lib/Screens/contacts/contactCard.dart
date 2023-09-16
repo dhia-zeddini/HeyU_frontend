@@ -15,12 +15,12 @@ class ContactCard extends StatelessWidget {
         ChatService.createChat(contact.uId).then((response)  {
           if(response[0]){
             var id = response[1].chatId;
-            print(id);
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => IndivChatScreen(
                   chatModel: response[1],
+                  title: contact.phoneNumber,
                 ),
               ),
             );

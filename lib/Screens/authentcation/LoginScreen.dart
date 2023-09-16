@@ -1,10 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:heyu_front/Models/Login_request_model.dart';
-import 'package:heyu_front/Models/Login_response_model.dart';
 import 'package:heyu_front/Screens/HomeScreen.dart';
+import 'package:heyu_front/Screens/authentcation/ForgetPwdScreen.dart';
 import 'package:heyu_front/Screens/authentcation/RegistrationScreen.dart';
 import 'package:heyu_front/Services/auth_service.dart';
+import 'package:heyu_front/Services/shared_service.dart';
 import 'package:heyu_front/config.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
@@ -22,7 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   String? phoneNumber;
   String? password;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,13 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
             "Phone Number",
             (onValidateVal) {
               if (onValidateVal.isEmpty) {
-                return "Phone number can\'t be empty";
+                return "Phone number can't be empty";
               }
               return null;
             },
             (onSavedVal) {
               phoneNumber = onSavedVal;
             },
+            isNumeric: true,
             showPrefixIcon: true,
             prefixIcon: const Icon(Icons.call),
             borderFocusColor: Colors.pink,
@@ -172,7 +174,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            print("forget pwd");
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (builder) =>
+                                    const ForgetPwd()),
+                                    (route) => false);
                           }),
                   ],
                 ),
@@ -193,6 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   LoginRequestModel model = LoginRequestModel(
                       phoneNumber: phoneNumber!, password: password!);
                   AuthService.login(model).then((response) {
+                    SharedService.onUserLogin();
                     setState(() {
                       isAPIcallProcess = false;
                     });
@@ -280,4 +288,5 @@ class _LoginScreenState extends State<LoginScreen> {
       return false;
     }
   }
+
 }
