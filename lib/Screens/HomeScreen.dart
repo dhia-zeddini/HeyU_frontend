@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heyu_front/Models/Login_response_model.dart';
+import 'package:heyu_front/Screens/account/profilePage.dart';
 import 'package:heyu_front/Screens/camera/CameraPage.dart';
 import 'package:heyu_front/Screens/chat/chatsScreen.dart';
 import 'package:heyu_front/Services/shared_service.dart';
@@ -39,46 +40,57 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         actions: [
           IconButton(
             onPressed: () {
-              SharedService.logout(context);
+
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.search),
           ),
 
           PopupMenuButton<String>(
             itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem(
-                  child: Text("Profile"),
+                 PopupMenuItem(
                   value: "profile",
+                  child: const Text("Profile"),
+
                 ),
-                PopupMenuItem(
-                  child: Text("New brodcast"),
-                  value: "brodcast",
+                const PopupMenuItem(
+                  value: "broadcast",
+                  child: Text("New broadcast"),
                 ),
-                PopupMenuItem(
-                  child: Text("Archive"),
+                const PopupMenuItem(
                   value: "archive",
+                  child: Text("Archive"),
                 ),
-                PopupMenuItem(
-                  child: Text("Settings"),
+                const PopupMenuItem(
                   value: "settings",
+                  child: Text("Settings"),
                 ),
-                PopupMenuItem(
-                  child: Text("Logout"),
+                 PopupMenuItem(
                   value: "logout",
+                  child: const Text("Logout"),
+                  onTap: (){
+                    SharedService.logout(context);
+                  },
                 ),
               ];
             },
             icon: const Icon(Icons.more_vert),
             onSelected: (value){
-              print(value);
+              if(value=="profile"){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ),
+                );
+              }
             },
           )
         ],
         bottom: TabBar(
           indicatorColor: Colors.white,
           controller: tabController,
-          tabs: [
+          tabs: const [
             Tab(
               icon: Icon(Icons.camera_alt),
             ),
@@ -96,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       ),
       body: TabBarView(
         controller: tabController,
-        children: [
+        children: const [
           CameraPage(),
           ChatsScreen(),
           Text("groups"),

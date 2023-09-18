@@ -3,6 +3,8 @@ import 'package:heyu_front/Models/ChatModel.dart';
 import 'package:heyu_front/Screens/chat/indivChatScreen.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 
+import '../../config.dart';
+
 class ChatItem extends StatelessWidget {
   const ChatItem({super.key, required this.chatModel});
 
@@ -11,7 +13,7 @@ class ChatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (chatModel.messages!.isNotEmpty) {
-        return FutureBuilder<String>(
+        return FutureBuilder<List<String>>(
           future: chatName(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -30,7 +32,8 @@ class ChatItem extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => IndivChatScreen(
                         chatModel: chatModel,
-                        title: chatName,
+                        title: chatName[0],
+                        avatar:chatName[1]
                       ),
                     ),
                   );
@@ -38,13 +41,14 @@ class ChatItem extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const CircleAvatar(
+                      leading:  CircleAvatar(
                         backgroundImage: NetworkImage(
-                            "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"),
+                            "http://${Config.apiURL}${Config.avatarsUrl}${chatName[1]}"
+                        ),
                         radius: 30,
                       ),
                       title: Text(
-                        chatName,
+                        chatName[0],
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -100,14 +104,18 @@ class ChatItem extends StatelessWidget {
       return Container();
     }
   }
-  Future<String> chatName()async{
+  Future<List<String>> chatName()async{
     String phoneNumber;
+    String avatar;
     String id= await SharedService.userId();
     if(chatModel.users[0].uId==id){
       phoneNumber=chatModel.users[1].phoneNumber;
+      avatar=chatModel.users[1].avatar;
     }else{
       phoneNumber=chatModel.users[0].phoneNumber;
+      avatar=chatModel.users[0].avatar;
+
     }
-    return phoneNumber;
+    return [phoneNumber,avatar];
   }
 }

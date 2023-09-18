@@ -113,8 +113,6 @@ class SharedService {
   }
   static void onUserLogout() {
     callController = null;
-
-    /// 5/5. de-initialization ZegoUIKitPrebuiltCallInvitationService when account is logged out
     ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 

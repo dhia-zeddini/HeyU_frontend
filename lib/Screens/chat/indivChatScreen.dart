@@ -22,18 +22,17 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'CallPage.dart';
 
 class IndivChatScreen extends StatefulWidget {
-  const IndivChatScreen({super.key, required this.chatModel,required this.title});
+  const IndivChatScreen({super.key, required this.chatModel,required this.title,required this.avatar});
 
   final ChatModel chatModel;
   final String title;
+  final String avatar;
 
   @override
   State<IndivChatScreen> createState() => _IndivChatScreenState();
 }
 //with WidgetsBindingObserver
 class _IndivChatScreenState extends State<IndivChatScreen> {
-  String avatar =
-      "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
   final String url = "http://${Config.apiURL}";
   bool showEmojis = false;
   FocusNode focusNode = FocusNode();
@@ -166,7 +165,6 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
     print(" working: $path");
     String receiver = await receiverId();
    MessageServive.sendMessage(content, receiver, widget.chatModel.chatId,path);
-    //MessageServive.sendImage("content", "64c706750e0bb48102b6ca26", "64c70a8087c37bf074cb8fa7",path);
   }
 
   void scrollToBottom() {
@@ -217,14 +215,14 @@ class _IndivChatScreenState extends State<IndivChatScreen> {
                       Icons.arrow_back_ios,
                       size: 24,
                     )),
-                /*CircleAvatar(
+                CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(avatar),
-                ),*/
-                sendCallButton(
+                  backgroundImage: NetworkImage("http://${Config.apiURL}${Config.avatarsUrl}${widget.avatar}"),
+                ),
+                /*sendCallButton(
                   isVideoCall: false,
                   onCallFinished: onSendCallInvitationFinished,
-                ),
+                ),*/
               ],
             ),
             title: InkWell(

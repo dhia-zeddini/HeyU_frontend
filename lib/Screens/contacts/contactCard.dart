@@ -21,6 +21,7 @@ class ContactCard extends StatelessWidget {
                 builder: (context) => IndivChatScreen(
                   chatModel: response[1],
                   title: contact.phoneNumber,
+                  avatar: contact.avatar,
                 ),
               ),
             );

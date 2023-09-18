@@ -6,6 +6,7 @@ class Config{
   static const String forgetPwdAPI="/forgetPwd";
   static const String newPwdAPI="/newPwd";
   static const String profileAPI="/user/profile";
+  static const String userAPI="/user/";
   static const String getUserChatsAPI="/chats/";
   static const String createChatAPI="/chats/";
   static const String wallpapersUrl="/images/wallpapers/";
@@ -13,7 +14,7 @@ class Config{
   static const String getUserContacts="/contact/";
   static const String sendImg="/messages/addImg";
   static const String sharedMedia="/images/sharedMedia/";
-
+  static const String avatarsUrl="/images/avatars/";
 
   static const int zegoAppId=2086398327;
   static const String zegoAppSignIn="fec1d8e4f16d90d7d963de34c3834e88fc6cd90cd46a587036a9c500465ff1a9";

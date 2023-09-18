@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:heyu_front/Screens/authentcation/ForgetPwdScreen.dart';
 import 'package:heyu_front/Screens/authentcation/LoginScreen.dart';
 import 'package:heyu_front/Services/shared_service.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
@@ -229,9 +231,40 @@ class _ResetPwdState extends State<ResetPwd> {
               borderColor: Colors.pink,
               txtColor: Colors.pink,
             ),
+
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only( top: 10),
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    color: Colors.pinkAccent.withOpacity(0.8),
+                    fontSize: 14.5,
+                  ),
+                  children: [
+                    TextSpan(
+                        text: "Back",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (builder) => const ForgetPwd()),
+                                    (route) => false);
+                          }),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
+
     );
   }
 

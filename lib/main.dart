@@ -29,7 +29,7 @@ Map<String,dynamic>routes={
   '/login':(context)=>const LoginScreen(),
   '/register':(context)=>const RegistrationScreen(),
   '/chats':(context)=>const ChatsScreen(),
-  "/indivChat":(context)=>IndivChatScreen(chatModel: context['chatModel'],title: context['title'],)
+  "/indivChat":(context)=>IndivChatScreen(chatModel: context['chatModel'],title: context['title'],avatar: context['avatar'],)
 };
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

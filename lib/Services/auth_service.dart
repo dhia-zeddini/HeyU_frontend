@@ -102,10 +102,6 @@ class AuthService{
       headers: requestHeaders,
       body: jsonEncode(requestBody),
     );
-    print(url);
-    /*fromJson(Map<String, dynamic> json) {
-      json['message'];
-      }*/
     print("resp: ${response.body[0]}");
     if(response.statusCode==200){
       return [true,response.body];
